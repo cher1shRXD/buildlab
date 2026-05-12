@@ -1,4 +1,5 @@
 # Description
+- One file can have only one component except skeleton ui.
 
 **Client Component**
 - Add `'use client'` at the top.
@@ -79,4 +80,24 @@ export const AtomicComponent = async ({ prop1, prop2, ...props }: Props) => {
     // jsx
   )
 }
+```
+
+# Template - Skeleton ui
+
+```tsx
+
+const ReactServerComponent = async () => {
+  const [data1, data2] = await Promise.all([/* API Functions in Entity */]);
+
+  return (
+    // jsx
+  )
+}
+
+ReactServerComponent.Skeleton = () => (
+  // jsx
+)
+
+export default ReactServerComponent
+
 ```
