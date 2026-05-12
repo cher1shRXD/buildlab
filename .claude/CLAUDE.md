@@ -1,4 +1,4 @@
-@AGENTS.md
+@../AGENTS.md
 
 # Working Flow
 
@@ -20,47 +20,31 @@
 - 컨벤션(FSD, naming, Tailwind v4, React Compiler)을 엄수한다.
 
 ## 4. Review (검토)
-- 변경된 파일이 레이어 컨벤션에 맞는지 확인한다.
-- 타입 오류, import 경로, 누락된 `'use client'` 등을 점검한다.
+- `pnpm rules:check`를 실행해 FSD 규칙, React Compiler, Tailwind v4 위반을 확인한다.
+- `pnpm typecheck`를 실행해 타입 오류, import 경로 오류를 확인한다.
+- 누락된 `'use client'` 등을 점검한다.
 - 문제가 있으면 즉시 수정한다. 사용자에게 넘기지 않는다.
 
 # Architecture
 
-@skills/fsd.md
+@skills/fsd/SKILL.md
 
 # UI & Styling
 
-@skills/ui.md
-@skills/tailwind.md
-@skills/react-compiler.md
+@skills/ui/SKILL.md
+@skills/tailwind-v4/SKILL.md
+@skills/react-compiler/SKILL.md
 
 # Layer Conventions
 
 ## shared
-@skills/shared/types.md
-@skills/shared/api.md
-@skills/shared/config.md
-@skills/shared/lib.md
-@skills/shared/ui.md
+@skills/shared/SKILL.md
 
 ## entities
-@skills/entity/type.md
-@skills/entity/api.md
-@skills/entity/query.md
-@skills/entity/mutation.md
-@skills/entity/ui.md
+@skills/entity/SKILL.md
 
 ## features
-@skills/feature/action.md
-@skills/feature/hook.md
-@skills/feature/store.md
-@skills/feature/constant.md
-@skills/feature/ui.md
-@skills/feature/utils.md
+@skills/feature/SKILL.md
 
 ## widgets
-@skills/widgets/ui.md
-
-## Global Rules
-모든 파일은 약 150줄 수준으로 가독성 좋게 모듈화한다.
-줄 수를 맞추기 위해 코드를 압축하지 말고, 책임 단위로 파일을 나눈다.
+@skills/widget/SKILL.md

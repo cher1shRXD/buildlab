@@ -1,3 +1,10 @@
+---
+name: react-compiler
+description: React Compiler conventions for this project. Use when writing React components or hooks — prohibits useMemo, useCallback, React.memo, and requires strict Rules of React compliance since reactCompiler is enabled in next.config.ts.
+compatibility: Designed for Claude Code with React Compiler enabled in Next.js
+allowed-tools: Read Bash(pnpm rules:check) Bash(pnpm typecheck)
+---
+
 # React Compiler Conventions
 
 The project has `reactCompiler: true` in `next.config.ts`. The React Compiler automatically memoizes components and values — manual optimization is not needed and may conflict.

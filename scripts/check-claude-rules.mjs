@@ -29,11 +29,13 @@ function walk(dir, files = []) {
 }
 
 function checkClaudeReferences() {
-  const claudePath = path.join(root, "CLAUDE.md");
-  if (!existsSync(claudePath)) return fail("CLAUDE.md", "required rule file is missing");
+  const candidates = [path.join(root, ".claude", "CLAUDE.md"), path.join(root, "CLAUDE.md")];
+  const claudePath = candidates.find(existsSync);
+  if (!claudePath) return fail("CLAUDE.md", "required rule file is missing (checked .claude/CLAUDE.md and CLAUDE.md)");
+  const claudeDir = path.dirname(claudePath);
   const refs = [...read(claudePath).matchAll(/@([A-Za-z0-9_./-]+\.md)/g)];
   for (const [, ref] of refs) {
-    if (!existsSync(path.join(root, ref))) fail("CLAUDE.md", `broken rule reference @${ref}`);
+    if (!existsSync(path.resolve(claudeDir, ref))) fail(rel(claudePath), `broken rule reference @${ref}`);
   }
 }
 

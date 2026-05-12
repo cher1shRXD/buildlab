@@ -1,3 +1,10 @@
+---
+name: tailwind-v4
+description: Tailwind CSS v4 conventions for this project. Use when writing styles, configuring tokens, or setting up dark mode — covers CSS-first config, @theme tokens, dark mode with CSS variables, and custom utilities. No tailwind.config.js.
+compatibility: Designed for Claude Code with Tailwind CSS v4
+allowed-tools: Read Bash(pnpm rules:check)
+---
+
 # Tailwind v4 Conventions
 
 ## Setup
@@ -8,7 +15,7 @@ Import Tailwind in the global CSS file:
 @import "tailwindcss";
 ```
 
-## Defining custom tokens
+## Defining Custom Tokens
 Use the `@theme` block in the global CSS file to define custom design tokens. These become Tailwind utility classes automatically.
 
 ```css
@@ -26,7 +33,7 @@ Use the `@theme` block in the global CSS file to define custom design tokens. Th
 
 After defining `--color-primary`, you can use `bg-primary`, `text-primary`, `border-primary`, etc. as Tailwind utilities.
 
-## Dark mode and CSS variables
+## Dark Mode and CSS Variables
 Define CSS variable overrides directly in `:root` and media queries. Do not use Tailwind's `dark:` variant for base token values.
 
 ```css
@@ -48,7 +55,7 @@ Define CSS variable overrides directly in `:root` and media queries. Do not use 
 }
 ```
 
-## Custom utilities
+## Custom Utilities
 Use `@layer utilities` for custom utility classes that cannot be expressed with `@theme` tokens.
 
 ```css
