@@ -7,4 +7,3 @@ node_modules
 Dockerfile
 .dockerignore
 .claude
-scripts
