@@ -1,30 +1,19 @@
-import NextAuth, { type DefaultSession } from "next-auth";
-import GitHub from "next-auth/providers/github";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "@/db";
-import { users, accounts, sessions, verificationTokens } from "@/db/schema";
+import { createSupabaseServerClient } from "@/db";
 
-declare module "next-auth" {
-  interface Session {
-    user: { id: string } & DefaultSession["user"];
-  }
-}
+export async function auth() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error || !user) return null;
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }),
-  providers: [GitHub],
-  pages: {
-    signIn: "/login",
-  },
-  callbacks: {
-    session({ session, user }) {
-      session.user.id = user.id;
-      return session;
+  return {
+    user: {
+      id: user.id,
+      email: user.email ?? "",
+      name: (user.user_metadata?.full_name ?? user.user_metadata?.name ?? null) as string | null,
+      image: (user.user_metadata?.avatar_url ?? null) as string | null,
     },
-  },
-});
+  };
+}

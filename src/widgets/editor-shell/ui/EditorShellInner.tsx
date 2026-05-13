@@ -10,11 +10,11 @@ import { useFlowStore } from "@/features/canvas-editor/stores/flow";
 import { useAutoSave } from "@/features/canvas-editor/hooks/useAutoSave";
 import { useExportSkillMutation } from "@/entities/skill/mutations";
 import type { SkillMeta } from "@/entities/skill/types";
-import type { Flow } from "@/db";
+import type { FlowData } from "@/entities/flow/types";
 
 interface Props {
   skill: SkillMeta;
-  flow: Flow | null;
+  flow: FlowData | null;
 }
 
 const EditorShellInner = ({ skill, flow }: Props) => {
@@ -27,6 +27,7 @@ const EditorShellInner = ({ skill, flow }: Props) => {
   useEffect(() => {
     if (flow) {
       loadFlow(JSON.parse(flow.nodesJson), JSON.parse(flow.edgesJson), JSON.parse(flow.viewportJson));
+
     }
   }, [flow, loadFlow]);
 

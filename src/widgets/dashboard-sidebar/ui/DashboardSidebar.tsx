@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/shared/lib/auth-client";
+
 import { Button } from "@/shared/ui/Button";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/Separator";
@@ -24,7 +25,7 @@ const DashboardSidebar = ({ user }: Props) => {
   const pathname = usePathname();
 
   async function handleSignOut() {
-    await signOut({ callbackUrl: "/login" });
+    await signOut();
   }
 
   return (

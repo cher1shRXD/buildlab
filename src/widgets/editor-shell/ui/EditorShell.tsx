@@ -3,11 +3,11 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import EditorShellInner from "./EditorShellInner";
 import type { SkillMeta } from "@/entities/skill/types";
-import type { Flow } from "@/db";
+import type { FlowData } from "@/entities/flow/types";
 
 interface Props {
   skill: SkillMeta;
-  flow: Flow | null;
+  flow: FlowData | null;
 }
 
 const EditorShell = ({ skill, flow }: Props) => (

@@ -92,16 +92,6 @@ export type NodeDataVariant =
   | OutputNodeData
   | TemplateNodeData;
 
-export interface FlowDocument {
-  id: string;
-  skillId: string;
-  version: number;
-  nodes: import("@xyflow/react").Node[];
-  edges: import("@xyflow/react").Edge[];
-  viewport: { x: number; y: number; zoom: number };
-  updatedAt: string;
-}
-
 export interface FlowData {
   id: string;
   skillId: string;

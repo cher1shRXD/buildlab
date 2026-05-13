@@ -14,10 +14,10 @@ A web-based skill builder where users design agent skills as visual flows (nodes
 |---|---|---|
 | next | 16.2.6 | Breaking changes vs 15 — read `node_modules/next/dist/docs/` |
 | react | 19.2.4 | |
-| next-auth | 5.0.0-beta.31 | v5 beta — API differs from v4 |
+| @supabase/supabase-js | ^2 | |
+| @supabase/ssr | ^0.10 | server/client helper |
 | @tanstack/react-query | ^5 | |
 | zustand | ^5 | |
-| drizzle-orm | ^0.45 | |
 
 ## Architecture
 
@@ -30,45 +30,55 @@ src/
   features/     auth/, canvas-editor/, editor-layout/, flow-validation/, node-editor/, skill-export/, skill-library/
   shared/       api/, config/, lib/, types/, ui/
   widgets/      auth-shell/, dashboard-sidebar/, ...
-  db/           Drizzle ORM connection and schema
+  db/           Supabase client factory and schema types
 ```
 
 ## Database
 
-- Engine: MySQL via `mysql2`
-- ORM: Drizzle ORM
-- Connection: `src/db/index.ts` — exports `db` and re-exports all schema types
-- Schema: `src/db/schema.ts`
-- Migrations: `pnpm db:generate` → `pnpm db:migrate`
+- Engine: PostgreSQL via Supabase
+- Client: `@supabase/supabase-js` + `@supabase/ssr`
+- Client factory: `src/db/index.ts` — exports `createSupabaseServerClient()`
+- Raw types + mappers: `src/db/schema.ts` — exports `Skill`, `Flow`, `toSkillMeta()`, `toFlowData()`
+- RLS enabled on all tables — queries are automatically scoped to the authenticated user
+- Schema changes: apply SQL directly in the Supabase dashboard SQL Editor
 
-### Tables
+### Tables (snake_case columns)
 
-| Table | Key fields |
+| Table | Key columns |
 |---|---|
-| `user` | id, name, email, image, createdAt |
-| `session` | sessionToken, userId, expires |
-| `account` | userId, provider, providerAccountId (compound PK) |
-| `skills` | id, userId, name, description, version, isPublished |
-| `flows` | id, skillId (unique), nodesJson, edgesJson, viewportJson |
-| `skill_exports` | id, skillId, flowVersion, skillMdContent |
+| `skills` | id, user_id, name, description, version, user_invocable, tags, compatible_platforms, is_published |
+| `flows` | id, skill_id (unique), version, nodes_json, edges_json, viewport_json |
+| `skill_exports` | id, skill_id, flow_version, skill_md_content |
 
-Import DB: `import { db } from '@/db'`
-Import types: `import type { Skill, Flow } from '@/db'`
+Create the server client and query:
+
+```ts
+import { createSupabaseServerClient, toSkillMeta } from '@/db';
+
+const supabase = await createSupabaseServerClient();
+const { data } = await supabase.from('skills').select('*').eq('user_id', user.id);
+```
+
+Always use `toSkillMeta(row)` / `toFlowData(row)` when mapping Supabase rows to entity types.
 
 ## Auth
 
-- Provider: NextAuth v5 + GitHub OAuth + DrizzleAdapter
-- Config: `src/shared/lib/auth.ts`
+- Provider: Supabase Auth + GitHub OAuth
+- Config: `src/shared/lib/auth.ts` (server), `src/shared/lib/auth-client.ts` (client)
+- OAuth callback: `src/app/auth/callback/route.ts`
+- Session is refreshed automatically via `middleware.ts`
 
-**Server-side** (Server Components, Route Handlers, Server Actions):
+**Server-side** (Server Components, Route Handlers):
 ```ts
 import { auth } from '@/shared/lib/auth';
-const session = await auth();
+const session = await auth(); // returns { user: { id, email, name, image } } | null
 ```
 
 **Client-side** (Client Components):
 ```ts
-import { signIn, signOut, useSession } from '@/shared/lib/auth-client';
+import { signIn, signOut } from '@/shared/lib/auth-client';
+await signIn();   // redirects to GitHub OAuth
+await signOut();  // signs out and redirects to /login
 ```
 
 Sign-in page: `/login`
@@ -87,19 +97,16 @@ export async function GET(req: Request, { params }: RouteHandlerProps<{ skillId:
 
 Existing routes:
 - `GET/POST /api/skills`
-- `GET/PATCH/DELETE /api/skills/[skillId]`
+- `GET/PUT/DELETE /api/skills/[skillId]`
 - `POST /api/skills/[skillId]/export`
 - `GET/PUT /api/flows/[flowId]`
-- `GET/POST /api/auth/[...nextauth]`
 
 ## Environment Variables
 
 | Variable | Required | Side |
 |---|---|---|
-| `DATABASE_URL` | yes | server |
-| `AUTH_SECRET` | yes | server |
-| `AUTH_GITHUB_ID` | yes | server |
-| `AUTH_GITHUB_SECRET` | yes | server |
+| `NEXT_PUBLIC_SUPABASE_URL` | yes | both |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | yes | both |
 | `NEXT_PUBLIC_APP_URL` | yes | both |
 
 Access via `@/shared/config`: `import { config } from '@/shared/config'`

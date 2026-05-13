@@ -1,34 +1,32 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/shared/lib/auth";
-import { db } from "@/db";
-import { skills, flows } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { createSupabaseServerClient, toSkillMeta } from "@/db";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-export async function GET(req: Request) {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const userSkills = await db.query.skills.findMany({
-    where: eq(skills.userId, session.user.id),
-    orderBy: (s, { desc }) => [desc(s.updatedAt)],
-  });
+  const { data: skills, error } = await supabase
+    .from("skills")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("updated_at", { ascending: false });
 
-  return NextResponse.json(
-    userSkills.map((s) => ({
-      ...s,
-      tags: JSON.parse(s.tags ?? "[]"),
-      compatiblePlatforms: JSON.parse(s.compatiblePlatforms ?? "[]"),
-      createdAt: s.createdAt.toISOString(),
-      updatedAt: s.updatedAt.toISOString(),
-    }))
-  );
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  return NextResponse.json((skills ?? []).map(toSkillMeta));
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
   const schema = z.object({
@@ -45,31 +43,30 @@ export async function POST(req: Request) {
   const skillId = nanoid();
   const flowId = nanoid();
 
-  await db.insert(skills).values({
+  const { error: skillError } = await supabase.from("skills").insert({
     id: skillId,
-    userId: session.user.id,
+    user_id: user.id,
     name: parsed.data.name,
     description: parsed.data.description ?? null,
+    version: "1.0.0",
+    user_invocable: true,
+    tags: "[]",
+    compatible_platforms: "[]",
+    is_published: false,
   });
+  if (skillError) return NextResponse.json({ error: skillError.message }, { status: 500 });
 
   const { initialNodes, initialEdges } = parsed.data;
-  await db.insert(flows).values({
+  await supabase.from("flows").insert({
     id: flowId,
-    skillId,
-    nodesJson: initialNodes ? JSON.stringify(initialNodes) : "[]",
-    edgesJson: initialEdges ? JSON.stringify(initialEdges) : "[]",
+    skill_id: skillId,
+    version: 1,
+    nodes_json: initialNodes ? JSON.stringify(initialNodes) : "[]",
+    edges_json: initialEdges ? JSON.stringify(initialEdges) : "[]",
+    viewport_json: JSON.stringify({ x: 0, y: 0, zoom: 1 }),
   });
 
-  const skill = await db.query.skills.findFirst({ where: eq(skills.id, skillId) });
+  const { data: skill } = await supabase.from("skills").select("*").eq("id", skillId).single();
 
-  return NextResponse.json(
-    {
-      ...skill,
-      tags: [],
-      compatiblePlatforms: [],
-      createdAt: skill!.createdAt.toISOString(),
-      updatedAt: skill!.updatedAt.toISOString(),
-    },
-    { status: 201 }
-  );
+  return NextResponse.json(toSkillMeta(skill), { status: 201 });
 }

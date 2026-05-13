@@ -1,12 +1,26 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
-import * as schema from "./schema";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
-const pool = mysql.createPool({
-  uri: process.env.DATABASE_URL!,
-  waitForConnections: true,
-  connectionLimit: 10,
-});
+export async function createSupabaseServerClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {}
+        },
+      },
+    }
+  );
+}
 
-export const db = drizzle(pool, { schema, mode: "default" });
 export * from "./schema";

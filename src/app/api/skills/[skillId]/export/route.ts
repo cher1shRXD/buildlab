@@ -1,47 +1,37 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/shared/lib/auth";
-import { db } from "@/db";
-import { skills, flows, skillExports } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { createSupabaseServerClient, toSkillMeta } from "@/db";
 import { nanoid } from "nanoid";
 import JSZip from "jszip";
 import { flowToSkillMd } from "@/features/skill-export/utils/flow-to-skill";
-import type { SkillMeta } from "@/entities/skill/types";
 import type { RouteHandlerProps } from "@/shared/types";
 
 export async function POST(req: Request, { params }: RouteHandlerProps<{ skillId: string }>) {
   const { skillId } = await params;
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await db.query.skills.findFirst({
-    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
-  });
+  const [{ data: skill }, { data: flow }] = await Promise.all([
+    supabase.from("skills").select("*").eq("id", skillId).eq("user_id", user.id).single(),
+    supabase.from("flows").select("*").eq("skill_id", skillId).single(),
+  ]);
+
   if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-  const flow = await db.query.flows.findFirst({
-    where: eq(flows.skillId, skillId),
-  });
   if (!flow) return NextResponse.json({ error: "Flow not found" }, { status: 404 });
 
-  const skillMeta: SkillMeta = {
-    ...skill,
-    tags: JSON.parse(skill.tags ?? "[]"),
-    compatiblePlatforms: JSON.parse(skill.compatiblePlatforms ?? "[]"),
-    createdAt: skill.createdAt.toISOString(),
-    updatedAt: skill.updatedAt.toISOString(),
-  };
-
-  const nodes = JSON.parse(flow.nodesJson);
-  const edges = JSON.parse(flow.edgesJson);
+  const skillMeta = toSkillMeta(skill);
+  const nodes = JSON.parse(flow.nodes_json);
+  const edges = JSON.parse(flow.edges_json);
 
   const { skillMd, auxiliaryFiles } = flowToSkillMd(skillMeta, nodes, edges);
 
-  await db.insert(skillExports).values({
+  await supabase.from("skill_exports").insert({
     id: nanoid(),
-    skillId,
-    flowVersion: flow.version,
-    skillMdContent: skillMd,
+    skill_id: skillId,
+    flow_version: flow.version,
+    skill_md_content: skillMd,
   });
 
   const zip = new JSZip();

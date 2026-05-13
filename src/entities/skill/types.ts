@@ -12,18 +12,12 @@ export interface SkillMeta {
   updatedAt: string;
 }
 
-export interface CreateSkillInput {
-  name: string;
+export type CreateSkillInput = Pick<SkillMeta, "name"> & {
   description?: string;
   initialNodes?: unknown[];
   initialEdges?: unknown[];
-}
+};
 
-export interface UpdateSkillInput {
-  name?: string;
-  description?: string;
-  version?: string;
-  userInvocable?: boolean;
-  tags?: string[];
-  compatiblePlatforms?: string[];
-}
+export type UpdateSkillInput = Partial<
+  Pick<SkillMeta, "name" | "description" | "version" | "userInvocable" | "tags" | "compatiblePlatforms">
+>;

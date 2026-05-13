@@ -1,44 +1,47 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/shared/lib/auth";
-import { db } from "@/db";
-import { skills } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { createSupabaseServerClient, toSkillMeta } from "@/db";
 import { z } from "zod";
 import type { RouteHandlerProps } from "@/shared/types";
 
 export async function GET(req: Request, { params }: RouteHandlerProps<{ skillId: string }>) {
   const { skillId } = await params;
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await db.query.skills.findFirst({
-    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
-  });
+  const { data: skill } = await supabase
+    .from("skills")
+    .select("*")
+    .eq("id", skillId)
+    .eq("user_id", user.id)
+    .single();
   if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json({
-    ...skill,
-    tags: JSON.parse(skill.tags ?? "[]"),
-    compatiblePlatforms: JSON.parse(skill.compatiblePlatforms ?? "[]"),
-    createdAt: skill.createdAt.toISOString(),
-    updatedAt: skill.updatedAt.toISOString(),
-  });
+  return NextResponse.json(toSkillMeta(skill));
 }
 
 export async function PUT(req: Request, { params }: RouteHandlerProps<{ skillId: string }>) {
   const { skillId } = await params;
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await db.query.skills.findFirst({
-    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
-  });
-  if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const { data: existing } = await supabase
+    .from("skills")
+    .select("id")
+    .eq("id", skillId)
+    .eq("user_id", user.id)
+    .single();
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
   const schema = z.object({
     name: z.string().min(1).max(64).optional(),
-    description: z.string().optional(),
+    description: z.string().nullable().optional(),
     version: z.string().optional(),
     userInvocable: z.boolean().optional(),
     tags: z.array(z.string()).optional(),
@@ -53,35 +56,33 @@ export async function PUT(req: Request, { params }: RouteHandlerProps<{ skillId:
   if (parsed.data.name !== undefined) updates.name = parsed.data.name;
   if (parsed.data.description !== undefined) updates.description = parsed.data.description;
   if (parsed.data.version !== undefined) updates.version = parsed.data.version;
-  if (parsed.data.userInvocable !== undefined) updates.userInvocable = parsed.data.userInvocable;
+  if (parsed.data.userInvocable !== undefined) updates.user_invocable = parsed.data.userInvocable;
   if (parsed.data.tags !== undefined) updates.tags = JSON.stringify(parsed.data.tags);
   if (parsed.data.compatiblePlatforms !== undefined)
-    updates.compatiblePlatforms = JSON.stringify(parsed.data.compatiblePlatforms);
+    updates.compatible_platforms = JSON.stringify(parsed.data.compatiblePlatforms);
 
-  await db.update(skills).set(updates).where(eq(skills.id, skillId));
+  await supabase.from("skills").update(updates).eq("id", skillId);
 
-  const updated = await db.query.skills.findFirst({
-    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
-  });
-  return NextResponse.json({
-    ...updated,
-    tags: JSON.parse(updated!.tags ?? "[]"),
-    compatiblePlatforms: JSON.parse(updated!.compatiblePlatforms ?? "[]"),
-    createdAt: updated!.createdAt.toISOString(),
-    updatedAt: updated!.updatedAt.toISOString(),
-  });
+  const { data: updated } = await supabase.from("skills").select("*").eq("id", skillId).single();
+  return NextResponse.json(toSkillMeta(updated!));
 }
 
 export async function DELETE(req: Request, { params }: RouteHandlerProps<{ skillId: string }>) {
   const { skillId } = await params;
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await db.query.skills.findFirst({
-    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
-  });
-  if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const { data: existing } = await supabase
+    .from("skills")
+    .select("id")
+    .eq("id", skillId)
+    .eq("user_id", user.id)
+    .single();
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await db.delete(skills).where(eq(skills.id, skillId));
+  await supabase.from("skills").delete().eq("id", skillId);
   return NextResponse.json({ success: true });
 }
