@@ -6,6 +6,7 @@ import { ScrollArea } from "@/shared/ui/scroll-area";
 import { Button } from "@/shared/ui/Button";
 import { X, Trash2 } from "lucide-react";
 import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
+import InputNodeForm from "./InputNodeForm";
 import TriggerNodeForm from "./TriggerNodeForm";
 import LLMNodeForm from "./LLMNodeForm";
 import ToolNodeForm from "./ToolNodeForm";
@@ -18,6 +19,7 @@ const NodeEditorPanel = () => {
   const { nodes, selectedNodeId, setSelectedNodeId } = useFlowStore();
   const { deleteNode } = useNodeEditor();
   const NODE_HINTS: Record<NodeKind, string> = {
+    input: "스킬이 호출될 때 받을 입력값을 정의해요",
     trigger: "이 스킬이 언제 실행될지 설정해요",
     llm: "AI가 무엇을 할지 지시해요",
     tool: "외부 서비스나 기능을 실행해요",
@@ -37,6 +39,8 @@ const NodeEditorPanel = () => {
     const nodeId = selectedNode!.id;
     const d = selectedNode!.data;
     switch (selectedNode!.type as NodeKind) {
+      case "input":
+        return <InputNodeForm nodeId={nodeId} data={d as never} />;
       case "trigger":
         return <TriggerNodeForm nodeId={nodeId} data={d as never} />;
       case "llm":

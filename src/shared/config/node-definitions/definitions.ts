@@ -6,10 +6,12 @@ import {
   Database,
   MessageSquare,
   Layers,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 
 export type NodeKind =
+  | "input"
   | "trigger"
   | "llm"
   | "tool"
@@ -28,6 +30,14 @@ export interface NodeDefinition {
 }
 
 export const NODE_DEFINITIONS: NodeDefinition[] = [
+  {
+    type: "input",
+    label: "입력 받기",
+    description: "스킬이 받을 입력값을 정의해요",
+    color: "#a06090",
+    bgColor: "#f6f3f5",
+    Icon: ClipboardList,
+  },
   {
     type: "trigger",
     label: "시작 조건",

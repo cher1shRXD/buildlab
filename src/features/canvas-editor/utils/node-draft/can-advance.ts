@@ -2,6 +2,8 @@ import type { NodeKind } from "@/entities/flow/types";
 
 export function canAdvance(kind: NodeKind, phase: number, draft: Record<string, unknown>): boolean {
   switch (kind) {
+    case "input":
+      return true;
     case "trigger":
       if (phase === 0) return true;
       return draft.triggerKind === "manual" || !!(draft.triggerValue as string)?.trim();

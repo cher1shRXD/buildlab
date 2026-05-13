@@ -6,6 +6,8 @@ export function getDefaultNodeData(type: NodeKind): Record<string, unknown> {
   const base = { label, isValid: false };
 
   switch (type) {
+    case "input":
+      return { ...base, fields: [] };
     case "trigger":
       return {
         ...base,

@@ -3,6 +3,8 @@ import type { NodeKind } from "@/entities/flow/types";
 
 export function getInitialDraft(kind: NodeKind): Record<string, unknown> {
   switch (kind) {
+    case "input":
+      return {};
     case "trigger":
       return { triggerKind: "keyword", triggerValue: "", triggerMatchMode: "exact" };
     case "llm":

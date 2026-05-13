@@ -8,6 +8,21 @@ export interface BaseNodeData {
   [key: string]: unknown;
 }
 
+export type InputFieldType = "string" | "number" | "boolean" | "array" | "object";
+
+export interface InputField {
+  id: string;
+  name: string;
+  type: InputFieldType;
+  description?: string;
+  required: boolean;
+  defaultValue?: string;
+}
+
+export interface InputNodeData extends BaseNodeData {
+  fields: InputField[];
+}
+
 export interface TriggerItem {
   kind: "keyword" | "context" | "manual" | "schedule" | "webhook";
   value: string;
@@ -84,6 +99,7 @@ export interface TemplateNodeData extends BaseNodeData {
 }
 
 export type NodeDataVariant =
+  | InputNodeData
   | TriggerNodeData
   | LLMNodeData
   | ToolNodeData

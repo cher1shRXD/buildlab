@@ -6,6 +6,8 @@ export function draftToNodeData(kind: NodeKind, draft: Record<string, unknown>):
   const label = (draft.label as string)?.trim() || defLabel;
 
   switch (kind) {
+    case "input":
+      return { label, fields: [], hasError: undefined };
     case "trigger":
       return {
         label,
