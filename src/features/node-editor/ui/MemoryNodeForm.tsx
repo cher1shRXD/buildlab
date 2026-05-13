@@ -1,35 +1,21 @@
 "use client";
 
-import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
 import { Input } from "@/shared/ui/Input";
-import { Download, Upload, Plus, Trash2, MessageCircle, HardDrive, Layers } from "lucide-react";
-import { ModeButton } from "@/shared/ui/ModeButton";
-import { ModeGroup } from "@/shared/ui/ModeGroup";
+import { ModeButton, ModeGroup } from "@/shared/ui/mode";
 import { FormField } from "@/shared/ui/FormField";
 import { OutputVarRow } from "@/shared/ui/OutputVarRow";
 import type { MemoryNodeData } from "@/entities/flow/types";
-import type { LucideIcon } from "lucide-react";
+import { OPERATION_MODES } from "../constants/operation-modes";
+import { SCOPE_MODES } from "../constants/scope-modes";
 
 interface Props {
   nodeId: string;
   data: MemoryNodeData;
 }
 
-const OPERATION_MODES: { op: string; Icon: LucideIcon; label: string; hint: string }[] = [
-  { op: "read",   Icon: Download, label: "읽기",  hint: "저장된 값을 불러옵니다" },
-  { op: "write",  Icon: Upload,   label: "저장",  hint: "값을 새로 저장합니다 (덮어씀)" },
-  { op: "append", Icon: Plus,     label: "추가",  hint: "기존 값에 새 내용을 이어 붙입니다" },
-  { op: "clear",  Icon: Trash2,   label: "삭제",  hint: "저장된 값을 지웁니다" },
-];
-
-const SCOPE_MODES: { scope: string; Icon: LucideIcon; label: string; hint: string }[] = [
-  { scope: "session",        Icon: MessageCircle, label: "대화 중만",  hint: "대화가 끝나면 사라집니다" },
-  { scope: "persistent",     Icon: HardDrive,     label: "영구 보관",  hint: "다음 대화에서도 유지됩니다" },
-  { scope: "context-window", Icon: Layers,        label: "컨텍스트",   hint: "AI 컨텍스트 윈도우에 저장합니다" },
-];
-
 const MemoryNodeForm = ({ nodeId, data }: Props) => {
-  const updateNodeData = useFlowStore((s) => s.updateNodeData);
+  const { updateNodeData } = useNodeEditor();
   const u = (field: string, value: unknown) => updateNodeData(nodeId, { [field]: value });
 
   const currentOp = OPERATION_MODES.find((m) => m.op === data.operation) ?? OPERATION_MODES[0];

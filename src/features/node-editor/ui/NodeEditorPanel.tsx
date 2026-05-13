@@ -1,7 +1,8 @@
 "use client";
 
 import { useFlowStore } from "@/features/canvas-editor/stores/flow";
-import { ScrollArea } from "@/shared/ui/ScrollArea";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
+import { ScrollArea } from "@/shared/ui/scroll-area";
 import { Button } from "@/shared/ui/Button";
 import { X, Trash2 } from "lucide-react";
 import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
@@ -13,18 +14,18 @@ import MemoryNodeForm from "./MemoryNodeForm";
 import OutputNodeForm from "./OutputNodeForm";
 import type { NodeKind } from "@/entities/flow/types";
 
-const NODE_HINTS: Record<NodeKind, string> = {
-  trigger: "이 스킬이 언제 실행될지 설정해요",
-  llm: "AI가 무엇을 할지 지시해요",
-  tool: "외부 서비스나 기능을 실행해요",
-  logic: "상황에 따라 다른 경로로 분기해요",
-  memory: "대화 정보나 데이터를 기억해요",
-  output: "사용자에게 결과를 보내요",
-  template: "다른 스킬을 호출해요",
-};
-
 const NodeEditorPanel = () => {
-  const { nodes, selectedNodeId, selectNode, deleteNode } = useFlowStore();
+  const { nodes, selectedNodeId, setSelectedNodeId } = useFlowStore();
+  const { deleteNode } = useNodeEditor();
+  const NODE_HINTS: Record<NodeKind, string> = {
+    trigger: "이 스킬이 언제 실행될지 설정해요",
+    llm: "AI가 무엇을 할지 지시해요",
+    tool: "외부 서비스나 기능을 실행해요",
+    logic: "상황에 따라 다른 경로로 분기해요",
+    memory: "대화 정보나 데이터를 기억해요",
+    output: "사용자에게 결과를 보내요",
+    template: "다른 스킬을 호출해요",
+  };
   const selectedNode = nodes.find((n) => n.id === selectedNodeId);
 
   if (!selectedNode) return null;
@@ -91,7 +92,7 @@ const NodeEditorPanel = () => {
               size="icon"
               variant="ghost"
               className="size-8"
-              onClick={() => selectNode(null)}
+              onClick={() => setSelectedNodeId(null)}
             >
               <X size={14} />
             </Button>

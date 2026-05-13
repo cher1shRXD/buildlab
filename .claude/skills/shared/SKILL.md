@@ -63,35 +63,31 @@ export type Pagination<T> = {
 ```ts
 import type { ErrorResponse } from '@/shared/types';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
-  });
-
-  if (!res.ok) {
-    const error: ErrorResponse = await res.json();
-    throw error;
+// private helpers (getBaseUrl, getServerCookieHeader, request, etc.) inside IIFE
+export const apiClient = (() => {
+  async function request<T>(path: string, init?: RequestInit): Promise<T> {
+    const res = await fetch(`/api${path}`, {
+      ...init,
+      headers: { 'Content-Type': 'application/json', ...init?.headers },
+    });
+    if (!res.ok) {
+      const error: ErrorResponse = await res.json();
+      throw error;
+    }
+    return res.json() as Promise<T>;
   }
 
-  return res.json() as Promise<T>;
-}
-
-export const apiClient = {
-  get: <T>(path: string) => request<T>(path),
-  post: <T>(path: string, body: unknown) =>
-    request<T>(path, { method: 'POST', body: JSON.stringify(body) }),
-  put: <T>(path: string, body: unknown) =>
-    request<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
-  patch: <T>(path: string, body: unknown) =>
-    request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
-  delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
-};
+  return {
+    get: <T>(path: string) => request<T>(path),
+    post: <T>(path: string, body: unknown) =>
+      request<T>(path, { method: 'POST', body: JSON.stringify(body) }),
+    put: <T>(path: string, body: unknown) =>
+      request<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
+    patch: <T>(path: string, body: unknown) =>
+      request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
+    delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
+  };
+})();
 ```
 
 ## `config/` — Environment Variables

@@ -2,6 +2,7 @@
 
 import { AlertCircle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 
 interface Props {
   selected: boolean;
@@ -26,14 +27,10 @@ const BaseNode = ({
 }: Props) => (
   <div
     onClick={onClick}
-    className="min-w-[110px] max-w-[160px] rounded-lg bg-card cursor-pointer transition-colors duration-100 border overflow-hidden"
-    style={{
-      borderColor: hasError
-        ? "#e57373"
-        : selected
-          ? `${color}90`
-          : "var(--border)",
-    }}
+    className={cn(
+      "min-w-[110px] max-w-[160px] rounded-lg bg-card cursor-pointer transition-colors duration-100 border overflow-hidden",
+      hasError ? "border-destructive" : selected ? "border-primary" : "border-border"
+    )}
   >
     <div className="flex items-center gap-1.5 px-2.5 py-1.5 border-b border-border/60 bg-muted/50">
       <span

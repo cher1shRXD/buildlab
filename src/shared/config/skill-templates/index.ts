@@ -1,8 +1,12 @@
 export type { SkillTemplate } from "./types";
-export { aiChatTemplate, commandSkillTemplate } from "./basic";
-export { textTransformTemplate, blankTemplate } from "./advanced";
+export { aiChatTemplate } from "./ai-chat-template";
+export { commandSkillTemplate } from "./command-skill-template";
+export { textTransformTemplate } from "./text-transform-template";
+export { blankTemplate } from "./blank-template";
 
-import { aiChatTemplate, commandSkillTemplate } from "./basic";
-import { textTransformTemplate, blankTemplate } from "./advanced";
+import { aiChatTemplate } from "./ai-chat-template";
+import { commandSkillTemplate } from "./command-skill-template";
+import { textTransformTemplate } from "./text-transform-template";
+import { blankTemplate } from "./blank-template";
 
 export const SKILL_TEMPLATES = [aiChatTemplate, commandSkillTemplate, textTransformTemplate, blankTemplate];

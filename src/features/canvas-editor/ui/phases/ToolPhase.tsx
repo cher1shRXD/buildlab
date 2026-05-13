@@ -5,7 +5,6 @@ import { Textarea } from "@/shared/ui/Textarea";
 import { Label } from "@/shared/ui/Label";
 import NodeSetupSelectCard from "../NodeSetupSelectCard";
 import { cn } from "@/shared/lib/utils";
-import { Globe, Code2, Wrench, Plug } from "lucide-react";
 
 interface Props {
   phase: number;
@@ -13,22 +12,13 @@ interface Props {
   update: (partial: Record<string, unknown>) => void;
 }
 
-const TOOL_OPTS = [
-  { kind: "http",    icon: Globe,  label: "HTTP API",    description: "외부 REST API를 호출합니다" },
-  { kind: "script",  icon: Code2,  label: "스크립트",    description: "JS / Python / Bash 코드를 실행합니다" },
-  { kind: "builtin", icon: Wrench, label: "빌트인 도구", description: "웹 검색, 파일 읽기/쓰기 등 내장 기능" },
-  { kind: "mcp",     icon: Plug,   label: "MCP 서버",    description: "Model Context Protocol 서버 도구 호출" },
-];
-
-const LANGS = [{ v: "javascript", l: "JS" }, { v: "python", l: "Python" }, { v: "bash", l: "Bash" }];
-const BUILTINS = [{ v: "web-search", l: "웹 검색" }, { v: "file-read", l: "파일 읽기" }, { v: "file-write", l: "파일 쓰기" }, { v: "shell", l: "쉘 실행" }];
-const METHODS = ["GET", "POST", "PUT", "DELETE"] as const;
+import { TOOL_PHASE_OPTIONS, TOOL_LANGUAGES, TOOL_BUILTINS, TOOL_HTTP_METHODS } from "../../constants/tool-phase";
 
 const ToolPhase = ({ phase, draft, update }: Props) => {
   if (phase === 0) {
     return (
       <div className="grid grid-cols-2 gap-2.5">
-        {TOOL_OPTS.map((o) => (
+        {TOOL_PHASE_OPTIONS.map((o) => (
           <NodeSetupSelectCard key={o.kind} icon={o.icon} label={o.label} description={o.description} selected={draft.toolKind === o.kind} onClick={() => update({ toolKind: o.kind })} />
         ))}
       </div>
@@ -45,7 +35,7 @@ const ToolPhase = ({ phase, draft, update }: Props) => {
           <Label className="text-xs">HTTP 메서드 + URL <span className="text-destructive">*</span></Label>
           <div className="flex gap-2">
             <div className="flex gap-0.5">
-              {METHODS.map((m) => (
+              {TOOL_HTTP_METHODS.map((m) => (
                 <button key={m} type="button" onClick={() => update({ method: m })} className={cn("px-2 py-1.5 rounded text-[10px] font-mono font-semibold transition-colors", draft.method === m ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground")}>{m}</button>
               ))}
             </div>
@@ -71,7 +61,7 @@ const ToolPhase = ({ phase, draft, update }: Props) => {
     return (
       <div className="space-y-3">
         <div className="flex gap-1">
-          {LANGS.map((l) => (
+          {TOOL_LANGUAGES.map((l) => (
             <button key={l.v} type="button" onClick={() => update({ language: l.v })} className={cn("px-3 py-1 rounded text-xs font-medium transition-colors", lang === l.v ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground")}>{l.l}</button>
           ))}
         </div>
@@ -83,7 +73,7 @@ const ToolPhase = ({ phase, draft, update }: Props) => {
   if (tKind === "builtin") {
     return (
       <div className="grid grid-cols-2 gap-2">
-        {BUILTINS.map((b) => (
+        {TOOL_BUILTINS.map((b) => (
           <button key={b.v} type="button" onClick={() => update({ builtinTool: b.v })} className={cn("p-3 rounded-lg border text-xs font-medium text-left transition-colors", draft.builtinTool === b.v ? "border-primary/50 bg-primary/8 text-primary" : "border-border/50 hover:bg-muted text-muted-foreground hover:text-foreground")}>{b.l}</button>
         ))}
       </div>

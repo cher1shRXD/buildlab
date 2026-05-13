@@ -1,69 +1,60 @@
 import { create } from "zustand";
 import { temporal } from "zundo";
-import { applyNodeChanges, applyEdgeChanges, addEdge, type Node } from "@xyflow/react";
-import { nanoid } from "nanoid";
-import { getDefaultNodeData } from "@/shared/config/node-definitions";
-import type { FlowStore } from "./flow-types";
+import type { Node, Edge, Viewport } from "@xyflow/react";
+import type { NodeKind } from "@/entities/flow/types";
 
-export { type FlowStore, type FlowState, type FlowActions } from "./flow-types";
+interface State {
+  nodes: Node[];
+  edges: Edge[];
+  viewport: Viewport;
+  selectedNodeId: string | null;
+  isDirty: boolean;
+  isSaving: boolean;
+  lastSavedAt: Date | null;
+  pendingAddNodeKind: NodeKind | null;
 
-export const useFlowStore = create<FlowStore>()(
+  setNodes: (nodes: Node[]) => void;
+  setEdges: (edges: Edge[]) => void;
+  setViewport: (viewport: Viewport) => void;
+  setSelectedNodeId: (id: string | null) => void;
+  setIsDirty: (dirty: boolean) => void;
+  setIsSaving: (saving: boolean) => void;
+  setPendingAddNodeKind: (kind: NodeKind | null) => void;
+  loadFlow: (nodes: Node[], edges: Edge[], viewport: Viewport) => void;
+  markSaved: () => void;
+  reset: () => void;
+}
+
+const initialState = {
+  nodes: [] as Node[],
+  edges: [] as Edge[],
+  viewport: { x: 0, y: 0, zoom: 1 } as Viewport,
+  selectedNodeId: null,
+  isDirty: false,
+  isSaving: false,
+  lastSavedAt: null,
+  pendingAddNodeKind: null,
+};
+
+export const useFlowStore = create<State>()(
   temporal(
     (set) => ({
-      nodes: [],
-      edges: [],
-      viewport: { x: 0, y: 0, zoom: 1 },
-      selectedNodeId: null,
-      isDirty: false,
-      isSaving: false,
-      lastSavedAt: null,
-      pendingAddNodeKind: null,
+      ...initialState,
 
-      setPendingAddNodeKind: (kind) => set({ pendingAddNodeKind: kind }),
-
-      setNodes: (changes) =>
-        set((state) => ({ nodes: applyNodeChanges(changes, state.nodes), isDirty: true })),
-
-      setEdges: (changes) =>
-        set((state) => ({ edges: applyEdgeChanges(changes, state.edges), isDirty: true })),
-
-      onConnect: (connection) =>
-        set((state) => ({ edges: addEdge({ ...connection, animated: true }, state.edges), isDirty: true })),
-
-      selectNode: (id) => set({ selectedNodeId: id }),
-
-      addNode: (type, position) => {
-        const newNode: Node = { id: nanoid(), type, position, data: getDefaultNodeData(type) };
-        set((state) => ({ nodes: [...state.nodes, newNode], selectedNodeId: newNode.id, isDirty: true }));
-      },
-
-      addNodeWithData: (type, position, overrideData) => {
-        const newNode: Node = { id: nanoid(), type, position, data: { ...getDefaultNodeData(type), ...overrideData } };
-        set((state) => ({ nodes: [...state.nodes, newNode], selectedNodeId: newNode.id, isDirty: true }));
-      },
-
-      updateNodeData: (id, data) =>
-        set((state) => ({
-          nodes: state.nodes.map((n) => n.id === id ? { ...n, data: { ...n.data, ...data } } : n),
-          isDirty: true,
-        })),
-
-      deleteNode: (id) =>
-        set((state) => ({
-          nodes: state.nodes.filter((n) => n.id !== id),
-          edges: state.edges.filter((e) => e.source !== id && e.target !== id),
-          selectedNodeId: state.selectedNodeId === id ? null : state.selectedNodeId,
-          isDirty: true,
-        })),
-
+      setNodes: (nodes) => set({ nodes }),
+      setEdges: (edges) => set({ edges }),
       setViewport: (viewport) => set({ viewport }),
+      setSelectedNodeId: (id) => set({ selectedNodeId: id }),
+      setIsDirty: (dirty) => set({ isDirty: dirty }),
+      setIsSaving: (saving) => set({ isSaving: saving }),
+      setPendingAddNodeKind: (kind) => set({ pendingAddNodeKind: kind }),
 
       loadFlow: (nodes, edges, viewport) =>
         set({ nodes, edges, viewport, isDirty: false, lastSavedAt: new Date() }),
 
       markSaved: () => set({ isDirty: false, isSaving: false, lastSavedAt: new Date() }),
 
-      setIsSaving: (isSaving) => set({ isSaving }),
+      reset: () => set(initialState),
     }),
     {
       limit: 50,

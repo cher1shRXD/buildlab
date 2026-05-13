@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDeleteSkillMutation } from "@/entities/skill/mutations";

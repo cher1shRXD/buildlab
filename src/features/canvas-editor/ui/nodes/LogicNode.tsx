@@ -7,11 +7,10 @@ import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import BaseNode from "./BaseNode";
 import type { LogicNodeData } from "@/entities/flow/types";
 
-const def = NODE_DEFINITION_MAP["logic"];
-
 const LogicNode = ({ id, data, selected }: NodeProps) => {
   const d = data as unknown as LogicNodeData;
-  const selectNode = useFlowStore((s) => s.selectNode);
+  const setSelectedNodeId = useFlowStore((s) => s.setSelectedNodeId);
+  const def = NODE_DEFINITION_MAP["logic"];
   const conditions = d.conditions ?? [];
 
   return (
@@ -27,7 +26,7 @@ const LogicNode = ({ id, data, selected }: NodeProps) => {
         color={def.color}
         kindLabel="조건 분기"
         hasError={d.hasError as string | undefined}
-        onClick={() => selectNode(id)}
+        onClick={() => setSelectedNodeId(id)}
       >
         <div className="flex items-center gap-1 mt-1">
           <Badge

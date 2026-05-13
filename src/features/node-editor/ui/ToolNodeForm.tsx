@@ -1,38 +1,23 @@
 "use client";
 
-import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
 import { Input } from "@/shared/ui/Input";
-import { Globe, Code2, Wrench, Plug } from "lucide-react";
-import { ModeButton } from "@/shared/ui/ModeButton";
-import { ModeGroup } from "@/shared/ui/ModeGroup";
+import { ModeButton, ModeGroup } from "@/shared/ui/mode";
 import { FormField } from "@/shared/ui/FormField";
 import { OutputVarRow } from "@/shared/ui/OutputVarRow";
 import ToolHttpFields from "./ToolHttpFields";
 import ToolScriptFields from "./ToolScriptFields";
 import type { ToolNodeData } from "@/entities/flow/types";
-import type { LucideIcon } from "lucide-react";
+import { TOOL_MODES } from "../constants/tool-modes";
+import { BUILTIN_OPTIONS } from "../constants/builtin-options";
 
 interface Props {
   nodeId: string;
   data: ToolNodeData;
 }
 
-const TOOL_MODES: { kind: string; Icon: LucideIcon; label: string }[] = [
-  { kind: "http",    Icon: Globe,  label: "HTTP API" },
-  { kind: "script",  Icon: Code2,  label: "스크립트" },
-  { kind: "builtin", Icon: Wrench, label: "빌트인" },
-  { kind: "mcp",     Icon: Plug,   label: "MCP" },
-];
-
-const BUILTIN_OPTIONS = [
-  { value: "web-search", label: "웹 검색" },
-  { value: "file-read",  label: "파일 읽기" },
-  { value: "file-write", label: "파일 쓰기" },
-  { value: "shell",      label: "쉘 실행" },
-];
-
 const ToolNodeForm = ({ nodeId, data }: Props) => {
-  const updateNodeData = useFlowStore((s) => s.updateNodeData);
+  const { updateNodeData } = useNodeEditor();
   const u = (field: string, value: unknown) => updateNodeData(nodeId, { [field]: value });
 
   return (

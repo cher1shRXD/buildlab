@@ -1,50 +1,43 @@
 "use client";
 
-import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
 import { Input } from "@/shared/ui/Input";
-import { Trash2, Hash, MessageCircle, Play, Globe } from "lucide-react";
-import { ModeButton } from "@/shared/ui/ModeButton";
+import { Trash2, Play, Globe } from "lucide-react";
+import { ModeButton } from "@/shared/ui/mode";
 import { FormField } from "@/shared/ui/FormField";
 import type { TriggerNodeData, TriggerItem } from "@/entities/flow/types";
-import type { LucideIcon } from "lucide-react";
+import { TRIGGER_MODES } from "../constants/trigger-modes";
 
 interface Props {
   nodeId: string;
   data: TriggerNodeData;
 }
 
-const TRIGGER_MODES: { kind: TriggerItem["kind"]; Icon: LucideIcon; label: string; placeholder: string; hint: string }[] = [
-  { kind: "keyword", Icon: Hash,          label: "단어/명령어", placeholder: "예: /배포",         hint: "이 단어가 입력되면 실행" },
-  { kind: "context", Icon: MessageCircle, label: "문맥 감지",   placeholder: "예: 코드 리뷰해줘", hint: "비슷한 의도의 메시지가 오면 실행" },
-  { kind: "manual",  Icon: Play,          label: "수동 호출",   placeholder: "",                  hint: "다른 도구에서 직접 호출" },
-  { kind: "webhook", Icon: Globe,         label: "외부 연동",   placeholder: "웹훅 경로",         hint: "HTTP 요청으로 외부에서 트리거" },
-];
-
 const TriggerNodeForm = ({ nodeId, data }: Props) => {
-  const updateNodeData = useFlowStore((s) => s.updateNodeData);
+  const { updateNodeData } = useNodeEditor();
   const triggers = data.triggers ?? [];
 
-  function addTrigger(kind: TriggerItem["kind"]) {
+  const addTrigger = (kind: TriggerItem["kind"]) => {
     updateNodeData(nodeId, {
       triggers: [...triggers, { kind, value: "", matchMode: "exact" as const }],
     });
-  }
+  };
 
-  function updateValue(index: number, value: string) {
+  const updateValue = (index: number, value: string) => {
     const next = [...triggers];
     next[index] = { ...next[index], value };
     updateNodeData(nodeId, { triggers: next });
-  }
+  };
 
-  function changeKind(index: number, kind: TriggerItem["kind"]) {
+  const changeKind = (index: number, kind: TriggerItem["kind"]) => {
     const next = [...triggers];
     next[index] = { ...next[index], kind, value: "" };
     updateNodeData(nodeId, { triggers: next });
-  }
+  };
 
-  function removeTrigger(index: number) {
+  const removeTrigger = (index: number) => {
     updateNodeData(nodeId, { triggers: triggers.filter((_, i) => i !== index) });
-  }
+  };
 
   return (
     <div className="space-y-6">

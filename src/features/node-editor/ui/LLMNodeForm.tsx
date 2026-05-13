@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
 import { Input } from "@/shared/ui/Input";
 import { Textarea } from "@/shared/ui/Textarea";
 import { Switch } from "@/shared/ui/Switch";
 import { ChevronDown, ChevronRight, Sparkles, Bot, Gem, Server } from "lucide-react";
-import { ModeButton } from "@/shared/ui/ModeButton";
-import { ModeGroup } from "@/shared/ui/ModeGroup";
+import { ModeButton, ModeGroup } from "@/shared/ui/mode";
 import { FormField } from "@/shared/ui/FormField";
 import { OutputVarRow } from "@/shared/ui/OutputVarRow";
 import type { LLMNodeData } from "@/entities/flow/types";
@@ -26,7 +25,7 @@ const AI_MODELS: { provider: string; model: string; Icon: LucideIcon; label: str
 ];
 
 const LLMNodeForm = ({ nodeId, data }: Props) => {
-  const updateNodeData = useFlowStore((s) => s.updateNodeData);
+  const { updateNodeData } = useNodeEditor();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const u = (field: string, value: unknown) => updateNodeData(nodeId, { [field]: value });
 

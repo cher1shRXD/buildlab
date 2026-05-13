@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactFlow, Background, Controls, MiniMap, BackgroundVariant, type Node } from "@xyflow/react";
+import { ReactFlow, Background, Controls, MiniMap, BackgroundVariant } from "@xyflow/react";
+import type { Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { nodeTypes } from "./nodes";
 import type { NodeKind } from "@/entities/flow/types";
@@ -16,10 +17,10 @@ const Canvas = ({}: Props) => {
     wrapperRef,
     nodes,
     edges,
-    setNodes,
-    setEdges,
+    onNodesChange,
+    onEdgesChange,
     onConnect,
-    selectNode,
+    setSelectedNodeId,
     addNodeWithData,
     setViewport,
     pendingDrop,
@@ -32,8 +33,8 @@ const Canvas = ({}: Props) => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={setNodes}
-        onEdgesChange={setEdges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onDrop={(e) => {
           e.preventDefault();
@@ -42,8 +43,8 @@ const Canvas = ({}: Props) => {
           setPendingDrop({ type, position: screenToFlowPosition({ x: e.clientX, y: e.clientY }) });
         }}
         onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; }}
-        onNodeClick={(_e, node: Node) => selectNode(node.id)}
-        onPaneClick={() => selectNode(null)}
+        onNodeClick={(_e, node: Node) => setSelectedNodeId(node.id)}
+        onPaneClick={() => setSelectedNodeId(null)}
         onMoveEnd={(_, vp) => setViewport(vp)}
         nodeTypes={nodeTypes}
         fitView

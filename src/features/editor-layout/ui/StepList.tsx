@@ -5,7 +5,7 @@ import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import type { NodeKind } from "@/entities/flow/types";
 
 const StepList = () => {
-  const { nodes, selectedNodeId, selectNode } = useFlowStore();
+  const { nodes, selectedNodeId, setSelectedNodeId } = useFlowStore();
 
   if (nodes.length === 0) return null;
 
@@ -21,7 +21,7 @@ const StepList = () => {
             <button
               key={node.id}
               type="button"
-              onClick={() => selectNode(node.id)}
+              onClick={() => setSelectedNodeId(node.id)}
               className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-colors"
               style={{ backgroundColor: isSelected ? `${def?.color}15` : undefined }}
               onMouseEnter={(e) => { if (!isSelected) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "var(--muted)"; }}

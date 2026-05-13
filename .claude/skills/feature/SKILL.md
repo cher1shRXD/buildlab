@@ -1,6 +1,6 @@
 ---
 name: feature
-description: Feature layer conventions for this project. Use when creating or modifying files in features/ — covers actions/, hooks/, stores/, constants/, ui/, and utils/ with naming rules, patterns, and templates for each directory type.
+description: Feature layer conventions for this project. Use when creating or modifying files in features/ — covers actions/, hooks/, stores/, constants/, ui/, utils/, and types/ with naming rules, patterns, and templates for each directory type.
 compatibility: Designed for Claude Code with Next.js + Zustand + TanStack Query + TypeScript
 allowed-tools: Read Bash(pnpm rules:check) Bash(pnpm typecheck)
 ---
@@ -28,8 +28,10 @@ export async function createEntity(payload: { field1: type; field2: type }) {
 ## `hooks/` — Business Logic Hooks
 
 - Name as `use{Entity}{Action}` in camelCase.
-- Connects UI events to mutations or server actions. Must not contain fetch logic or direct API calls.
+- Do NOT add `'use client'` — hooks are plain functions and do not need it.
+- Connects UI events to mutations, server actions, or store operations. Must not contain fetch logic or direct API calls.
 - Compose mutation hooks from `entities/{entity}/mutations.ts`. Do not call `{Entity}Api` directly.
+- Complex store operations (derived state, multi-field updates, side effects) belong in hooks, not in the store.
 - Expose only what the component needs — handlers and derived state (e.g. `isPending`, `isError`).
 - Do not put JSX or component logic inside a hook.
 
@@ -48,12 +50,14 @@ const useEntityAction = (field1?: type) => {
 ## `stores/` — Zustand Stores
 
 - Name as `use{Entity}Store` in camelCase.
-- Define the store interface above `create`. State fields and actions must all be declared in the interface.
+- Declare a single `interface State` that contains all state fields and functions — do not split into State + Actions.
 - Use `create` from `zustand`. Do not use `zustand/middleware` unless persistence is explicitly required.
 - Store only UI state shared across components (selected item, modal open state, filter values). Server data belongs in React Query.
-- Always include a `reset` action to restore initial state.
+- Store can only declare 3 kinds of members: **state** fields, **setter** functions, and **reset**.
+  - Setter: a simple `set({ field: value })` call. No derived logic, no API calls, no `nanoid`.
+  - Complex operations (e.g. addNode, deleteNode, updateNodeData) belong in hooks, not here.
+- Always include a `reset` function that restores initial state.
 - Do not call `{Entity}Api` or any async function inside a store action.
-- Store can have only 3 function types: state, setter, reset.
 
 ```ts
 interface State {
@@ -67,6 +71,20 @@ const useEntityStore = create<State>((set) => ({
   setField: (value) => set({ field: value }),
   reset: () => set({ field: initialValue }),
 }));
+```
+
+## `types/` — Feature-Scoped Types
+
+- Place TypeScript types that are specific to this feature and used across multiple files within it.
+- Do not put entity types here — those belong in `entities/{entity}/types.ts`.
+- Do not put shared types here — those belong in `shared/types/`.
+- Export from `types/index.ts`.
+
+```ts
+export interface PendingDrop {
+  type: NodeKind;
+  position: { x: number; y: number };
+}
 ```
 
 ## `constants/` — Constant Variables

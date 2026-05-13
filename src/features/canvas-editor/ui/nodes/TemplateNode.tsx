@@ -6,11 +6,10 @@ import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import BaseNode from "./BaseNode";
 import type { TemplateNodeData } from "@/entities/flow/types";
 
-const def = NODE_DEFINITION_MAP["template"];
-
 const TemplateNode = ({ id, data, selected }: NodeProps) => {
   const d = data as unknown as TemplateNodeData;
-  const selectNode = useFlowStore((s) => s.selectNode);
+  const setSelectedNodeId = useFlowStore((s) => s.setSelectedNodeId);
+  const def = NODE_DEFINITION_MAP["template"];
 
   return (
     <>
@@ -25,7 +24,7 @@ const TemplateNode = ({ id, data, selected }: NodeProps) => {
         color={def.color}
         kindLabel="스킬 연결"
         hasError={d.hasError as string | undefined}
-        onClick={() => selectNode(id)}
+        onClick={() => setSelectedNodeId(id)}
       >
         <p className="text-[9px] text-muted-foreground mt-1">
           {d.referencedSkillId

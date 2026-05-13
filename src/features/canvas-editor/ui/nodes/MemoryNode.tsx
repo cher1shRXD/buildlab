@@ -7,11 +7,10 @@ import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import BaseNode from "./BaseNode";
 import type { MemoryNodeData } from "@/entities/flow/types";
 
-const def = NODE_DEFINITION_MAP["memory"];
-
 const MemoryNode = ({ id, data, selected }: NodeProps) => {
   const d = data as unknown as MemoryNodeData;
-  const selectNode = useFlowStore((s) => s.selectNode);
+  const setSelectedNodeId = useFlowStore((s) => s.setSelectedNodeId);
+  const def = NODE_DEFINITION_MAP["memory"];
 
   return (
     <>
@@ -26,7 +25,7 @@ const MemoryNode = ({ id, data, selected }: NodeProps) => {
         color={def.color}
         kindLabel="기억하기"
         hasError={d.hasError as string | undefined}
-        onClick={() => selectNode(id)}
+        onClick={() => setSelectedNodeId(id)}
       >
         <div className="flex items-center gap-1 mt-1">
           <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3.5">

@@ -48,15 +48,23 @@ const EntityApi = {
 - Name as `useGet{Entity}{Scope}Query` — `Scope` is `List`, `Detail`, or a specific field name (e.g. `BySlug`).
 - `queryFn` must point to a method on `{Entity}Api`. Do not write fetch logic inline.
 - `queryKey` must be derived from endpoint segments in the same order as the URL path.
+- `skillKeys` 같은 공유 query key 객체도 이 파일에 함께 선언한다.
+- `queries.ts`와 `mutations.ts`는 entity 전용 파일로, 여러 hook을 하나의 파일에 선언하는 것이 허용된다.
 
 ```ts
-const useGetEntityListQuery = () => useSuspenseQuery({
-  queryKey: ["some", "endpoint"],
+export const entityKeys = {
+  all: ["entity"] as const,
+  list: () => [...entityKeys.all, "list"] as const,
+  detail: (id: string) => [...entityKeys.all, "detail", id] as const,
+};
+
+export const useGetEntityListQuery = () => useSuspenseQuery({
+  queryKey: entityKeys.list(),
   queryFn: EntityApi.getList,
 });
 
-const useGetEntityDetailQuery = (field: type) => useSuspenseQuery({
-  queryKey: ["some", "endpoint", field],
+export const useGetEntityDetailQuery = (field: type) => useSuspenseQuery({
+  queryKey: entityKeys.detail(field),
   queryFn: () => EntityApi.getDetail(field),
 });
 ```
@@ -69,22 +77,32 @@ const useGetEntityDetailQuery = (field: type) => useSuspenseQuery({
 - Always handle both `onSuccess` and `onError`.
 - In `onSuccess`: invalidate or update related queries via `queryClient`, then show a success toast.
 - In `onError`: show an error toast using the message from `err`. Type the error as `ErrorResponse` (from `shared/types`).
-- Call `useQueryClient` and `useToast` outside `useMutation` and close over them inside callbacks.
+- Call `useQueryClient` outside `useMutation` and close over it inside callbacks.
+- `queries.ts`와 `mutations.ts`는 entity 전용 파일로, 여러 hook을 하나의 파일에 선언하는 것이 허용된다.
 
 ```ts
-const useCreateEntityMutation = () => {
+export const useCreateEntityMutation = () => {
   const queryClient = useQueryClient();
-  const toast = useToast();
 
   return useMutation({
     mutationFn: EntityApi.create,
-    onSuccess: (res) => {
-      queryClient.invalidateQueries({ queryKey: ["some", "endpoint"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: entityKeys.list() });
       toast.success("Created successfully");
     },
     onError: (err: ErrorResponse) => {
       toast.error(err.message);
     }
+  });
+}
+
+export const useDeleteEntityMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => EntityApi.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: entityKeys.list() }),
+    onError: (err: ErrorResponse) => toast.error(err.message),
   });
 }
 ```

@@ -4,9 +4,7 @@ import { useStore } from "zustand";
 import NodePalette from "@/features/canvas-editor/ui/NodePalette";
 import { useFlowStore } from "@/features/canvas-editor/stores/flow";
 import { Button } from "@/shared/ui/Button";
-import { Tooltip } from "@/shared/ui/Tooltip";
-import { TooltipContent } from "@/shared/ui/TooltipContent";
-import { TooltipTrigger } from "@/shared/ui/TooltipTrigger";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/ui/tooltip";
 import { Undo2, Redo2 } from "lucide-react";
 import StepList from "./StepList";
 

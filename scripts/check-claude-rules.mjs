@@ -8,7 +8,7 @@ const errors = [];
 const ignoredDirs = new Set([".git", ".next", "node_modules", "out", "build"]);
 const ignoredFiles = new Set(["pnpm-lock.yaml", "tsconfig.tsbuildinfo", "next-env.d.ts"]);
 const checkedExts = new Set([".css", ".json", ".md", ".mjs", ".ts", ".tsx", ".yaml", ".yml"]);
-const featureSegments = new Set(["actions", "hooks", "stores", "constants", "ui", "utils"]);
+const featureSegments = new Set(["actions", "hooks", "stores", "constants", "ui", "utils", "types"]);
 const sharedSegments = new Set(["api", "config", "lib", "types", "ui"]);
 const entityFiles = new Set(["types.ts", "apis.ts", "mutations.ts", "queries.ts"]);
 

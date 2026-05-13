@@ -7,11 +7,10 @@ import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import BaseNode from "./BaseNode";
 import type { ToolNodeData } from "@/entities/flow/types";
 
-const def = NODE_DEFINITION_MAP["tool"];
-
 const ToolNode = ({ id, data, selected }: NodeProps) => {
   const d = data as unknown as ToolNodeData;
-  const selectNode = useFlowStore((s) => s.selectNode);
+  const setSelectedNodeId = useFlowStore((s) => s.setSelectedNodeId);
+  const def = NODE_DEFINITION_MAP["tool"];
 
   return (
     <>
@@ -26,7 +25,7 @@ const ToolNode = ({ id, data, selected }: NodeProps) => {
         color={def.color}
         kindLabel="외부 기능"
         hasError={d.hasError as string | undefined}
-        onClick={() => selectNode(id)}
+        onClick={() => setSelectedNodeId(id)}
       >
         <div className="flex items-center gap-1 mt-1">
           <Badge

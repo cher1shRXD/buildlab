@@ -1,30 +1,21 @@
 "use client";
 
-import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
 import { Input } from "@/shared/ui/Input";
 import { Textarea } from "@/shared/ui/Textarea";
 import { Switch } from "@/shared/ui/Switch";
-import { FileText, AlignLeft, Code2, Braces } from "lucide-react";
-import { ModeButton } from "@/shared/ui/ModeButton";
-import { ModeGroup } from "@/shared/ui/ModeGroup";
+import { ModeButton, ModeGroup } from "@/shared/ui/mode";
 import { FormField } from "@/shared/ui/FormField";
 import type { OutputNodeData } from "@/entities/flow/types";
-import type { LucideIcon } from "lucide-react";
+import { FORMAT_MODES } from "../constants/format-modes";
 
 interface Props {
   nodeId: string;
   data: OutputNodeData;
 }
 
-const FORMAT_MODES: { value: string; Icon: LucideIcon; label: string }[] = [
-  { value: "markdown", Icon: FileText,  label: "마크다운" },
-  { value: "plain",    Icon: AlignLeft, label: "텍스트" },
-  { value: "code",     Icon: Code2,     label: "코드" },
-  { value: "json",     Icon: Braces,    label: "JSON" },
-];
-
 const OutputNodeForm = ({ nodeId, data }: Props) => {
-  const updateNodeData = useFlowStore((s) => s.updateNodeData);
+  const { updateNodeData } = useNodeEditor();
   const u = (field: string, value: unknown) => updateNodeData(nodeId, { [field]: value });
 
   return (

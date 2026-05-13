@@ -6,13 +6,6 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-const createSchema = z.object({
-  name: z.string().min(1).max(64),
-  description: z.string().optional(),
-  initialNodes: z.array(z.unknown()).optional(),
-  initialEdges: z.array(z.unknown()).optional(),
-});
-
 export async function GET(req: Request) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -38,7 +31,13 @@ export async function POST(req: Request) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const parsed = createSchema.safeParse(body);
+  const schema = z.object({
+    name: z.string().min(1).max(64),
+    description: z.string().optional(),
+    initialNodes: z.array(z.unknown()).optional(),
+    initialEdges: z.array(z.unknown()).optional(),
+  });
+  const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }

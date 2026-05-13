@@ -1,7 +1,6 @@
 "use client";
 
-import { Dialog } from "@/shared/ui/Dialog";
-import { DialogContent } from "@/shared/ui/DialogContent";
+import { Dialog, DialogContent } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/Button";
 import { Download, Loader2, X } from "lucide-react";
 import { useFlowStore } from "@/features/canvas-editor/stores/flow";

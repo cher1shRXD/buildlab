@@ -4,8 +4,7 @@ import { Button } from "@/shared/ui/Button";
 import { Input } from "@/shared/ui/Input";
 import { Label } from "@/shared/ui/Label";
 import { Textarea } from "@/shared/ui/Textarea";
-import { DialogHeader } from "@/shared/ui/DialogHeader";
-import { DialogTitle } from "@/shared/ui/DialogTitle";
+import { DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { ArrowLeft } from "lucide-react";
 import type { SkillTemplate } from "@/shared/config/skill-templates";
 

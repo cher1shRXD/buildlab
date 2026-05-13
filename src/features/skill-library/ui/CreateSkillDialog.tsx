@@ -3,18 +3,12 @@
 import { useCreateSkillDialog } from "../hooks/useCreateSkillDialog";
 import { SKILL_TEMPLATES } from "@/shared/config/skill-templates";
 import { Button } from "@/shared/ui/Button";
-import { Dialog } from "@/shared/ui/Dialog";
-import { DialogContent } from "@/shared/ui/DialogContent";
-import { DialogHeader } from "@/shared/ui/DialogHeader";
-import { DialogTitle } from "@/shared/ui/DialogTitle";
-import { DialogTrigger } from "@/shared/ui/DialogTrigger";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
 import CreateSkillNameStep from "./CreateSkillNameStep";
 import { Plus } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-interface Props {}
-
-const CreateSkillDialog = ({}: Props) => {
+const CreateSkillDialog = () => {
   const {
     open,
     setOpen,

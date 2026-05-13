@@ -2,17 +2,12 @@
 
 import { Textarea } from "@/shared/ui/Textarea";
 import type { ToolNodeData } from "@/entities/flow/types";
+import { SCRIPT_LANGS } from "../constants/script-langs";
 
 interface Props {
   data: ToolNodeData;
   u: (field: string, value: unknown) => void;
 }
-
-const SCRIPT_LANGS = [
-  { value: "javascript", label: "JavaScript" },
-  { value: "python",     label: "Python" },
-  { value: "bash",       label: "Bash" },
-];
 
 const ToolScriptFields = ({ data, u }: Props) => {
   const lang = data.language ?? "javascript";

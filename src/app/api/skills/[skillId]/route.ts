@@ -6,27 +6,14 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import type { RouteHandlerProps } from "@/shared/types";
 
-const updateSchema = z.object({
-  name: z.string().min(1).max(64).optional(),
-  description: z.string().optional(),
-  version: z.string().optional(),
-  userInvocable: z.boolean().optional(),
-  tags: z.array(z.string()).optional(),
-  compatiblePlatforms: z.array(z.string()).optional(),
-});
-
-async function getAuthorizedSkill(skillId: string, userId: string) {
-  return db.query.skills.findFirst({
-    where: and(eq(skills.id, skillId), eq(skills.userId, userId)),
-  });
-}
-
 export async function GET(req: Request, { params }: RouteHandlerProps<{ skillId: string }>) {
   const { skillId } = await params;
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await getAuthorizedSkill(skillId, session.user.id);
+  const skill = await db.query.skills.findFirst({
+    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
+  });
   if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   return NextResponse.json({
@@ -43,11 +30,21 @@ export async function PUT(req: Request, { params }: RouteHandlerProps<{ skillId:
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await getAuthorizedSkill(skillId, session.user.id);
+  const skill = await db.query.skills.findFirst({
+    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
+  });
   if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
-  const parsed = updateSchema.safeParse(body);
+  const schema = z.object({
+    name: z.string().min(1).max(64).optional(),
+    description: z.string().optional(),
+    version: z.string().optional(),
+    userInvocable: z.boolean().optional(),
+    tags: z.array(z.string()).optional(),
+    compatiblePlatforms: z.array(z.string()).optional(),
+  });
+  const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
@@ -63,7 +60,9 @@ export async function PUT(req: Request, { params }: RouteHandlerProps<{ skillId:
 
   await db.update(skills).set(updates).where(eq(skills.id, skillId));
 
-  const updated = await getAuthorizedSkill(skillId, session.user.id);
+  const updated = await db.query.skills.findFirst({
+    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
+  });
   return NextResponse.json({
     ...updated,
     tags: JSON.parse(updated!.tags ?? "[]"),
@@ -78,7 +77,9 @@ export async function DELETE(req: Request, { params }: RouteHandlerProps<{ skill
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const skill = await getAuthorizedSkill(skillId, session.user.id);
+  const skill = await db.query.skills.findFirst({
+    where: and(eq(skills.id, skillId), eq(skills.userId, session.user.id)),
+  });
   if (!skill) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await db.delete(skills).where(eq(skills.id, skillId));

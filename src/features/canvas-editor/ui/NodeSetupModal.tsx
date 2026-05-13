@@ -1,7 +1,6 @@
 "use client";
 
-import { Dialog } from "@/shared/ui/Dialog";
-import { DialogContent } from "@/shared/ui/DialogContent";
+import { Dialog, DialogContent } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/Button";
 import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import { canAdvance } from "@/features/canvas-editor/utils/node-draft";
@@ -11,16 +10,6 @@ import { Check, X } from "lucide-react";
 import { useNodeSetupModal } from "../hooks/useNodeSetupModal";
 
 type PhaseDef = { title: string; hint?: string };
-
-const PHASE_DEFS: Record<NodeKind, PhaseDef[]> = {
-  trigger:  [{ title: "이 스킬은 어떻게 활성화될까요?", hint: "사용자 입력 방식이나 실행 조건을 선택하세요" }, { title: "활성화 값을 설정해주세요" }],
-  llm:      [{ title: "어떤 AI 모델을 쓸까요?", hint: "모델마다 성능, 속도, 비용이 달라요" }, { title: "AI에게 무엇을 시킬까요?", hint: "{{변수명}} 으로 이전 노드 결과를 참조할 수 있어요" }],
-  tool:     [{ title: "어떤 도구를 쓸까요?", hint: "외부 API나 스크립트, 빌트인 기능 중 선택하세요" }, { title: "도구를 설정해주세요" }],
-  logic:    [{ title: "어떻게 분기할까요?", hint: "플로우를 나누거나 반복시킬 수 있어요" }, { title: "분기 조건을 설정해주세요" }],
-  memory:   [{ title: "메모리에 무엇을 할까요?", hint: "대화 중 데이터를 기억하거나 꺼낼 수 있어요" }, { title: "저장소를 설정해주세요" }],
-  output:   [{ title: "결과를 어떻게 보여줄까요?", hint: "형식에 따라 사용자에게 다르게 표시돼요" }, { title: "출력 내용을 작성해주세요", hint: "{{변수명}} 으로 이전 결과를 삽입할 수 있어요" }],
-  template: [{ title: "참조할 스킬을 설정해주세요", hint: "다른 스킬을 서브플로우로 불러올 수 있어요" }],
-};
 
 interface Props {
   nodeKind: NodeKind | null;
@@ -38,6 +27,15 @@ const NodeSetupModal = ({ nodeKind, onComplete, onCancel }: Props) => {
     handleBack,
   } = useNodeSetupModal(nodeKind, onComplete, onCancel);
 
+  const PHASE_DEFS: Record<NodeKind, PhaseDef[]> = {
+    trigger:  [{ title: "이 스킬은 어떻게 활성화될까요?", hint: "사용자 입력 방식이나 실행 조건을 선택하세요" }, { title: "활성화 값을 설정해주세요" }],
+    llm:      [{ title: "어떤 AI 모델을 쓸까요?", hint: "모델마다 성능, 속도, 비용이 달라요" }, { title: "AI에게 무엇을 시킬까요?", hint: "{{변수명}} 으로 이전 노드 결과를 참조할 수 있어요" }],
+    tool:     [{ title: "어떤 도구를 쓸까요?", hint: "외부 API나 스크립트, 빌트인 기능 중 선택하세요" }, { title: "도구를 설정해주세요" }],
+    logic:    [{ title: "어떻게 분기할까요?", hint: "플로우를 나누거나 반복시킬 수 있어요" }, { title: "분기 조건을 설정해주세요" }],
+    memory:   [{ title: "메모리에 무엇을 할까요?", hint: "대화 중 데이터를 기억하거나 꺼낼 수 있어요" }, { title: "저장소를 설정해주세요" }],
+    output:   [{ title: "결과를 어떻게 보여줄까요?", hint: "형식에 따라 사용자에게 다르게 표시돼요" }, { title: "출력 내용을 작성해주세요", hint: "{{변수명}} 으로 이전 결과를 삽입할 수 있어요" }],
+    template: [{ title: "참조할 스킬을 설정해주세요", hint: "다른 스킬을 서브플로우로 불러올 수 있어요" }],
+  };
   const def = nodeKind ? NODE_DEFINITION_MAP[nodeKind] : null;
   if (!def || !nodeKind) return null;
 

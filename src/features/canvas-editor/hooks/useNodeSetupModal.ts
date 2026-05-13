@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import type { NodeKind } from "@/entities/flow/types";
 import { getInitialDraft, draftToNodeData } from "@/features/canvas-editor/utils/node-draft";

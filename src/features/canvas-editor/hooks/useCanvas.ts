@@ -1,9 +1,11 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
-import { useReactFlow } from "@xyflow/react";
+import { useReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from "@xyflow/react";
+import type { NodeChange, EdgeChange, Connection } from "@xyflow/react";
+import { nanoid } from "nanoid";
 import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { getDefaultNodeData } from "@/shared/config/node-definitions";
 import type { NodeKind } from "@/entities/flow/types";
+import type { PendingDrop } from "@/features/canvas-editor/types";
 
 export const useCanvas = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -13,18 +15,45 @@ export const useCanvas = () => {
     edges,
     setNodes,
     setEdges,
-    onConnect,
-    selectNode,
-    addNodeWithData,
+    setIsDirty,
+    setSelectedNodeId,
     setViewport,
     pendingAddNodeKind,
     setPendingAddNodeKind,
   } = useFlowStore();
 
-  const [pendingDrop, setPendingDrop] = useState<{
-    type: NodeKind;
-    position: { x: number; y: number };
-  } | null>(null);
+  const [pendingDrop, setPendingDrop] = useState<PendingDrop | null>(null);
+
+  const onNodesChange = (changes: NodeChange[]) => {
+    setNodes(applyNodeChanges(changes, nodes));
+    setIsDirty(true);
+  };
+
+  const onEdgesChange = (changes: EdgeChange[]) => {
+    setEdges(applyEdgeChanges(changes, edges));
+    setIsDirty(true);
+  };
+
+  const onConnect = (connection: Connection) => {
+    setEdges(addEdge({ ...connection, animated: true }, edges));
+    setIsDirty(true);
+  };
+
+  const addNodeWithData = (
+    type: NodeKind,
+    position: { x: number; y: number },
+    overrideData: Record<string, unknown>
+  ) => {
+    const newNode = {
+      id: nanoid(),
+      type,
+      position,
+      data: { ...getDefaultNodeData(type), ...overrideData },
+    };
+    setNodes([...nodes, newNode]);
+    setSelectedNodeId(newNode.id);
+    setIsDirty(true);
+  };
 
   useEffect(() => {
     if (!pendingAddNodeKind) return;
@@ -43,10 +72,10 @@ export const useCanvas = () => {
     wrapperRef,
     nodes,
     edges,
-    setNodes,
-    setEdges,
+    onNodesChange,
+    onEdgesChange,
     onConnect,
-    selectNode,
+    setSelectedNodeId,
     addNodeWithData,
     setViewport,
     pendingDrop,

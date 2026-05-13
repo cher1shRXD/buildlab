@@ -2,11 +2,7 @@
 
 import { CheckCircle2, XCircle } from "lucide-react";
 import type { SkillMeta } from "@/entities/skill/types";
-
-interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-}
+import { ValidationResult } from "../types/validation-result";
 
 interface Props {
   validation: ValidationResult;

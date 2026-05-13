@@ -1,50 +1,42 @@
 "use client";
 
-import { useFlowStore } from "@/features/canvas-editor/stores/flow";
+import { useNodeEditor } from "@/features/node-editor/hooks/useNodeEditor";
 import { Input } from "@/shared/ui/Input";
 import { Button } from "@/shared/ui/Button";
-import { Trash2, Plus, GitBranch, LayoutGrid, Repeat, Zap } from "lucide-react";
-import { ModeButton } from "@/shared/ui/ModeButton";
-import { ModeGroup } from "@/shared/ui/ModeGroup";
+import { Trash2, Plus } from "lucide-react";
+import { ModeButton, ModeGroup } from "@/shared/ui/mode";
 import { FormField } from "@/shared/ui/FormField";
 import { nanoid } from "nanoid";
 import type { LogicNodeData } from "@/entities/flow/types";
-import type { LucideIcon } from "lucide-react";
+import { LOGIC_MODES } from "../constants/logic-modes";
 
 interface Props {
   nodeId: string;
   data: LogicNodeData;
 }
 
-const LOGIC_MODES: { kind: string; Icon: LucideIcon; label: string; hint: string }[] = [
-  { kind: "if",       Icon: GitBranch,  label: "조건 분기", hint: "조건에 따라 다른 경로로 분기합니다" },
-  { kind: "switch",   Icon: LayoutGrid, label: "다중 분기", hint: "여러 값에 따라 각각 다른 경로로 분기합니다" },
-  { kind: "loop",     Icon: Repeat,     label: "반복",      hint: "목록의 각 항목마다 반복 실행합니다" },
-  { kind: "parallel", Icon: Zap,        label: "동시 실행", hint: "여러 경로를 동시에 병렬로 실행합니다" },
-];
-
 const LogicNodeForm = ({ nodeId, data }: Props) => {
-  const updateNodeData = useFlowStore((s) => s.updateNodeData);
+  const { updateNodeData } = useNodeEditor();
   const u = (field: string, value: unknown) => updateNodeData(nodeId, { [field]: value });
   const conditions = data.conditions ?? [];
   const currentMode = LOGIC_MODES.find((m) => m.kind === data.logicKind) ?? LOGIC_MODES[0];
 
-  function addCondition() {
+  const addCondition = () => {
     u("conditions", [
       ...conditions,
       { id: nanoid(), expression: "", label: `branch${conditions.length + 1}` },
     ]);
-  }
+  };
 
-  function updateCondition(index: number, field: string, value: string) {
+  const updateCondition = (index: number, field: string, value: string) => {
     const next = [...conditions];
     next[index] = { ...next[index], [field]: value };
     u("conditions", next);
-  }
+  };
 
-  function removeCondition(index: number) {
+  const removeCondition = (index: number) => {
     u("conditions", conditions.filter((_, i) => i !== index));
-  }
+  };
 
   return (
     <div className="space-y-6">

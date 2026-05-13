@@ -2,11 +2,7 @@
 
 import { Input } from "@/shared/ui/Input";
 import { Textarea } from "@/shared/ui/Textarea";
-import { Select } from "@/shared/ui/Select";
-import { SelectContent } from "@/shared/ui/SelectContent";
-import { SelectItem } from "@/shared/ui/SelectItem";
-import { SelectTrigger } from "@/shared/ui/SelectTrigger";
-import { SelectValue } from "@/shared/ui/SelectValue";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import type { ToolNodeData } from "@/entities/flow/types";
 
 interface Props {

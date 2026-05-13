@@ -101,3 +101,13 @@ export interface FlowDocument {
   viewport: { x: number; y: number; zoom: number };
   updatedAt: string;
 }
+
+export interface FlowData {
+  id: string;
+  skillId: string;
+  version: number;
+  nodesJson: string;
+  edgesJson: string;
+  viewportJson: string;
+  updatedAt: string;
+}

@@ -1,18 +1,10 @@
 "use client";
 
 import type { SkillMeta } from "@/entities/skill/types";
-import { Card } from "@/shared/ui/Card";
-import { CardContent } from "@/shared/ui/CardContent";
-import { CardFooter } from "@/shared/ui/CardFooter";
-import { CardHeader } from "@/shared/ui/CardHeader";
-import { CardTitle } from "@/shared/ui/CardTitle";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
-import { DropdownMenu } from "@/shared/ui/DropdownMenu";
-import { DropdownMenuContent } from "@/shared/ui/DropdownMenuContent";
-import { DropdownMenuItem } from "@/shared/ui/DropdownMenuItem";
-import { DropdownMenuSeparator } from "@/shared/ui/DropdownMenuSeparator";
-import { DropdownMenuTrigger } from "@/shared/ui/DropdownMenuTrigger";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useSkillCard } from "../hooks/useSkillCard";
 

@@ -4,13 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/shared/lib/auth-client";
 import { Button } from "@/shared/ui/Button";
-import { Avatar } from "@/shared/ui/Avatar";
-import { AvatarFallback } from "@/shared/ui/AvatarFallback";
+import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/Separator";
-import { DropdownMenu } from "@/shared/ui/DropdownMenu";
-import { DropdownMenuContent } from "@/shared/ui/DropdownMenuContent";
-import { DropdownMenuItem } from "@/shared/ui/DropdownMenuItem";
-import { DropdownMenuTrigger } from "@/shared/ui/DropdownMenuTrigger";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { Zap, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "@/shared/ui/ThemeToggle";
 

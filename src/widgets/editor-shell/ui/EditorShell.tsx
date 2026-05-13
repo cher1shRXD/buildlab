@@ -3,13 +3,7 @@
 import { ReactFlowProvider } from "@xyflow/react";
 import EditorShellInner from "./EditorShellInner";
 import type { SkillMeta } from "@/entities/skill/types";
-
-interface Flow {
-  id: string;
-  nodesJson: string;
-  edgesJson: string;
-  viewportJson: string;
-}
+import type { Flow } from "@/db";
 
 interface Props {
   skill: SkillMeta;

@@ -10,15 +10,7 @@ import { useFlowStore } from "@/features/canvas-editor/stores/flow";
 import { useAutoSave } from "@/features/canvas-editor/hooks/useAutoSave";
 import { useExportSkillMutation } from "@/entities/skill/mutations";
 import type { SkillMeta } from "@/entities/skill/types";
-
-const PANEL_WIDTH = 420;
-
-interface Flow {
-  id: string;
-  nodesJson: string;
-  edgesJson: string;
-  viewportJson: string;
-}
+import type { Flow } from "@/db";
 
 interface Props {
   skill: SkillMeta;
@@ -26,6 +18,7 @@ interface Props {
 }
 
 const EditorShellInner = ({ skill, flow }: Props) => {
+  const panelWidth = 420;
   const loadFlow = useFlowStore((s) => s.loadFlow);
   const selectedNodeId = useFlowStore((s) => s.selectedNodeId);
   const [exportOpen, setExportOpen] = useState(false);
@@ -61,8 +54,8 @@ const EditorShellInner = ({ skill, flow }: Props) => {
           <main className="flex-1 relative overflow-hidden">
             <Canvas />
           </main>
-          <div className="overflow-hidden transition-[width] duration-300 ease-in-out border-l border-border shrink-0" style={{ width: isOpen ? PANEL_WIDTH : 0, borderLeftWidth: isOpen ? 1 : 0 }}>
-            <div style={{ width: PANEL_WIDTH }} className="h-full">
+          <div className="overflow-hidden transition-[width] duration-300 ease-in-out border-l border-border shrink-0" style={{ width: isOpen ? panelWidth : 0, borderLeftWidth: isOpen ? 1 : 0 }}>
+            <div style={{ width: panelWidth }} className="h-full">
               <NodeEditorPanel />
             </div>
           </div>

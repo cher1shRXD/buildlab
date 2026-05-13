@@ -7,11 +7,10 @@ import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import BaseNode from "./BaseNode";
 import type { TriggerNodeData } from "@/entities/flow/types";
 
-const def = NODE_DEFINITION_MAP["trigger"];
-
 const TriggerNode = ({ id, data, selected }: NodeProps) => {
   const d = data as unknown as TriggerNodeData;
-  const selectNode = useFlowStore((s) => s.selectNode);
+  const setSelectedNodeId = useFlowStore((s) => s.setSelectedNodeId);
+  const def = NODE_DEFINITION_MAP["trigger"];
 
   return (
     <>
@@ -21,7 +20,7 @@ const TriggerNode = ({ id, data, selected }: NodeProps) => {
         color={def.color}
         kindLabel="시작 조건"
         hasError={d.hasError as string | undefined}
-        onClick={() => selectNode(id)}
+        onClick={() => setSelectedNodeId(id)}
       >
         <div className="flex flex-wrap gap-0.5 mt-1">
           {(d.triggers ?? []).slice(0, 2).map((t, i) => (
