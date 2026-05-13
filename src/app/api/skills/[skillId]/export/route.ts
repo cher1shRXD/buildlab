@@ -41,10 +41,11 @@ export async function POST(req: Request, { params }: RouteHandlerProps<{ skillId
   }
   const zipArrayBuffer = await zip.generateAsync({ type: "arraybuffer" });
 
+  const encodedName = encodeURIComponent(`${skill.name}.zip`);
   return new Response(zipArrayBuffer, {
     headers: {
       "Content-Type": "application/zip",
-      "Content-Disposition": `attachment; filename="${skill.name}.zip"`,
+      "Content-Disposition": `attachment; filename="skill.zip"; filename*=UTF-8''${encodedName}`,
     },
   });
 }
