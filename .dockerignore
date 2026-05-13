@@ -3,7 +3,5 @@
 .next
 node_modules
 .env*
-*.md
 Dockerfile
 .dockerignore
-.claude
