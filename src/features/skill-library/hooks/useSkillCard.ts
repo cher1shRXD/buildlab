@@ -1,20 +1,27 @@
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useDeleteSkillMutation } from "@/entities/skill/mutations";
+import { toast } from "sonner";
+import { deleteSkill } from "@/features/skill-library/actions/deleteSkill";
 import type { SkillMeta } from "@/entities/skill/types";
 
 export const useSkillCard = (skill: SkillMeta) => {
   const router = useRouter();
-  const { mutateAsync: deleteSkill, isPending } = useDeleteSkillMutation();
+  const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!confirmDelete) {
       setConfirmDelete(true);
       return;
     }
-    await deleteSkill(skill.id);
-    setConfirmDelete(false);
+    startTransition(async () => {
+      try {
+        await deleteSkill(skill.id);
+      } catch {
+        toast.error("삭제에 실패했습니다.");
+      }
+      setConfirmDelete(false);
+    });
   };
 
   const handleNavigate = () => {

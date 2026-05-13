@@ -2,10 +2,21 @@ import { Skeleton } from "@/shared/ui/Skeleton";
 import { Zap } from "lucide-react";
 import SkillCard from "./SkillCard";
 import CreateSkillDialog from "./CreateSkillDialog";
-import { SkillApi } from "@/entities/skill/apis";
+import { createSupabaseServerClient, toSkillMeta } from "@/db";
+import { auth } from "@/shared/lib/auth";
 
 const SkillGrid = async () => {
-  const skills = await SkillApi.getList();
+  const session = await auth();
+  if (!session?.user) return null;
+
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("skills")
+    .select("*")
+    .eq("user_id", session.user.id)
+    .order("updated_at", { ascending: false });
+
+  const skills = (data ?? []).map(toSkillMeta);
   
   if (skills.length === 0) {
     return (
