@@ -19,7 +19,7 @@ const NodeEditorPanel = () => {
   const { nodes, selectedNodeId, setSelectedNodeId } = useFlowStore();
   const { deleteNode } = useNodeEditor();
   const NODE_HINTS: Record<NodeKind, string> = {
-    input: "스킬이 호출될 때 받을 입력값을 정의해요",
+    input: "사용자 입력을 변수로 저장해 프롬프트에서 참조해요",
     trigger: "이 스킬이 언제 실행될지 설정해요",
     llm: "AI가 무엇을 할지 지시해요",
     tool: "외부 서비스나 기능을 실행해요",

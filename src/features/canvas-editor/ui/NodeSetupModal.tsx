@@ -28,7 +28,7 @@ const NodeSetupModal = ({ nodeKind, onComplete, onCancel }: Props) => {
   } = useNodeSetupModal(nodeKind, onComplete, onCancel);
 
   const PHASE_DEFS: Record<NodeKind, PhaseDef[]> = {
-    input:    [{ title: "입력 필드를 정의해주세요", hint: "스킬이 호출될 때 받을 파라미터를 추가하세요" }],
+    input:    [{ title: "사용자 입력을 변수로 받아요", hint: "LLM 프롬프트에서 {{변수명}} 으로 참조할 수 있어요" }],
     trigger:  [{ title: "이 스킬은 어떻게 활성화될까요?", hint: "사용자 입력 방식이나 실행 조건을 선택하세요" }, { title: "활성화 값을 설정해주세요" }],
     llm:      [{ title: "어떤 AI 모델을 쓸까요?", hint: "모델마다 성능, 속도, 비용이 달라요" }, { title: "AI에게 무엇을 시킬까요?", hint: "{{변수명}} 으로 이전 노드 결과를 참조할 수 있어요" }],
     tool:     [{ title: "어떤 도구를 쓸까요?", hint: "외부 API나 스크립트, 빌트인 기능 중 선택하세요" }, { title: "도구를 설정해주세요" }],

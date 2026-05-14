@@ -48,7 +48,7 @@ const Canvas = ({}: Props) => {
         onMoveEnd={(_, vp) => setViewport(vp)}
         nodeTypes={nodeTypes}
         fitView
-        deleteKeyCode="Delete"
+        deleteKeyCode={["Delete", "Backspace"]}
         multiSelectionKeyCode="Shift"
         className="bg-background"
       >

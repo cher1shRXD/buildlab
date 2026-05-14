@@ -7,7 +7,7 @@ export function getDefaultNodeData(type: NodeKind): Record<string, unknown> {
 
   switch (type) {
     case "input":
-      return { ...base, fields: [] };
+      return { ...base, outputVariable: "user_input" };
     case "trigger":
       return {
         ...base,

@@ -1,7 +1,6 @@
 "use client";
 
 import { Handle, Position, type NodeProps } from "@xyflow/react";
-import { Badge } from "@/shared/ui/Badge";
 import { useFlowStore } from "@/features/canvas-editor/stores/flow";
 import { NODE_DEFINITION_MAP } from "@/shared/config/node-definitions";
 import BaseNode from "./BaseNode";
@@ -14,6 +13,7 @@ const InputNode = ({ id, data, selected }: NodeProps) => {
 
   return (
     <>
+      <Handle type="target" position={Position.Left} style={{ background: def.color }} />
       <BaseNode
         selected={!!selected}
         label={d.label}
@@ -22,13 +22,11 @@ const InputNode = ({ id, data, selected }: NodeProps) => {
         hasError={d.hasError as string | undefined}
         onClick={() => setSelectedNodeId(id)}
       >
-        <div className="flex flex-wrap gap-0.5 mt-1">
-          {(d.fields ?? []).slice(0, 3).map((f, i) => (
-            <Badge key={i} variant="secondary" className="text-[9px] px-1 py-0 h-3.5">
-              {f.name || "미설정"}
-            </Badge>
-          ))}
-        </div>
+        {d.outputVariable && (
+          <p className="text-[9px] font-mono text-muted-foreground mt-1 truncate">
+            {`{{${d.outputVariable}}}`}
+          </p>
+        )}
       </BaseNode>
       <Handle type="source" position={Position.Right} style={{ background: def.color }} />
     </>

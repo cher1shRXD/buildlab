@@ -1,4 +1,4 @@
-import type { TriggerNodeData, LLMNodeData, ToolNodeData, LogicNodeData, MemoryNodeData, OutputNodeData, TemplateNodeData } from "@/entities/flow/types";
+import type { TriggerNodeData, LLMNodeData, ToolNodeData, LogicNodeData, MemoryNodeData, OutputNodeData, TemplateNodeData, InputNodeData } from "@/entities/flow/types";
 import type { Node } from "@xyflow/react";
 import { compileLLM } from "./compile-llm";
 import { compileTool } from "./compile-tool";
@@ -35,8 +35,14 @@ export function compileNode(node: Node, ctx: CompilerContext): string {
     return `## ${data.label}\n\nDelegate to skill \`${data.referencedSkillId}\`.`;
   }
 
+  function compileInput(data: InputNodeData): string {
+    ctx.variables.add(data.outputVariable);
+    return `## User Input\n\nCapture the user's message into \`{{${data.outputVariable}}}\`.`;
+  }
+
   const data = node.data as Record<string, unknown>;
   switch (node.type) {
+    case "input":    return compileInput(data as unknown as InputNodeData);
     case "trigger":  return compileTrigger(data as unknown as TriggerNodeData);
     case "llm":      return compileLLM(data as unknown as LLMNodeData, ctx);
     case "tool":     return compileTool(data as unknown as ToolNodeData, ctx, node.id);
