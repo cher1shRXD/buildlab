@@ -1,11 +1,8 @@
-import { createSupabaseServerClient } from "@/db";
+import { getServerClient } from "@/db";
 
 export async function auth() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  const supabase = await getServerClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) return null;
 
   return {

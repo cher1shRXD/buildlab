@@ -1,7 +1,8 @@
 "use server";
 
 import { auth } from "@/shared/lib/auth";
-import { createSupabaseServerClient } from "@/db";
+import { FlowApi } from "@/entities/flow/apis";
+import { SkillApi } from "@/entities/skill/apis";
 import type { Node, Edge, Viewport } from "@xyflow/react";
 
 export async function updateFlow(
@@ -11,26 +12,11 @@ export async function updateFlow(
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
 
-  const supabase = await createSupabaseServerClient();
-
-  const { data: flow } = await supabase.from("flows").select("*").eq("id", flowId).single();
+  const flow = await FlowApi.getById(flowId);
   if (!flow) throw new Error("Not found");
 
-  const { data: skill } = await supabase
-    .from("skills")
-    .select("id")
-    .eq("id", flow.skill_id)
-    .eq("user_id", session.user.id)
-    .single();
+  const skill = await SkillApi.getById(flow.skillId);
   if (!skill) throw new Error("Forbidden");
 
-  await supabase
-    .from("flows")
-    .update({
-      nodes_json: JSON.stringify(payload.nodes),
-      edges_json: JSON.stringify(payload.edges),
-      viewport_json: JSON.stringify(payload.viewport),
-      version: flow.version + 1,
-    })
-    .eq("id", flowId);
+  await FlowApi.update(flowId, { ...payload, version: flow.version });
 }

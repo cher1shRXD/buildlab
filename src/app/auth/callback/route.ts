@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createRouteClient } from "@/db";
 
 export async function GET(request: NextRequest) {
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
@@ -14,30 +13,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login?error=no_code`);
   }
 
+  const response = NextResponse.redirect(`${origin}${next}`);
+
   try {
-    const cookieStore = await cookies();
-    const response = NextResponse.redirect(`${origin}${next}`);
+    const supabase = createRouteClient(request, response);
 
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, options);
-            });
-          },
-        },
-      }
-    );
-
-    console.log("[auth/callback] supabase url:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log("[auth/callback] cookies:", cookieStore.getAll().map((c) => c.name).join(", "));
+    console.log("[auth/callback] cookies:", request.cookies.getAll().map((c) => c.name).join(", "));
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
-      console.error("[auth/callback] supabase error:", error.message);
+      console.error("[auth/callback] error:", error.message);
       return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
     }
     return response;

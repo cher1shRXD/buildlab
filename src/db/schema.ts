@@ -1,11 +1,3 @@
-export interface User {
-  id: string;
-  email: string;
-  name?: string | null;
-  image?: string | null;
-  created_at: string;
-}
-
 export interface Skill {
   id: string;
   user_id: string;
@@ -37,9 +29,6 @@ export interface SkillExport {
   skill_md_content: string;
   generated_at: string;
 }
-
-// Supabase returns untyped data — these mappers centralise the snake_case → camelCase transform
-// so API routes and server pages don't duplicate the logic.
 
 export function toSkillMeta(row: Record<string, unknown>) {
   return {
