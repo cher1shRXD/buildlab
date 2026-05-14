@@ -17,6 +17,7 @@ export const useSkillCard = (skill: SkillMeta) => {
     startTransition(async () => {
       try {
         await deleteSkill(skill.id);
+        toast.success(`'${skill.name}' 스킬이 삭제되었습니다.`);
       } catch {
         toast.error("삭제에 실패했습니다.");
       }

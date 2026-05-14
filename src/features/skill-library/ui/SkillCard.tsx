@@ -52,6 +52,7 @@ const SkillCard = ({ skill }: Props) => {
               <DropdownMenuItem
                 onClick={handleDelete}
                 disabled={isPending}
+                closeOnClick={confirmDelete}
                 className={confirmDelete ? "text-destructive bg-destructive/10 gap-2 font-medium" : "text-destructive gap-2"}
               >
                 <Trash2 size={14} />
