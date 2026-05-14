@@ -8,7 +8,8 @@ import { Button } from "@/shared/ui/Button";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/Separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { Zap, LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import { LayoutDashboard, LogOut, ChevronDown } from "lucide-react";
+import { Logo } from "@/shared/ui/Logo";
 import { ThemeToggle } from "@/shared/ui/ThemeToggle";
 
 interface User {
@@ -30,9 +31,8 @@ const DashboardSidebar = ({ user }: Props) => {
 
   return (
     <aside className="w-56 flex flex-col border-r bg-background h-full">
-      <div className="flex items-center gap-2 px-4 py-4 font-bold text-lg text-primary">
-        <Zap size={20} />
-        <span className="flex-1">Buildlab</span>
+      <div className="flex items-center justify-between px-4 py-4">
+        <Logo className="text-primary h-4" />
         <ThemeToggle className="size-7" />
       </div>
       <Separator />

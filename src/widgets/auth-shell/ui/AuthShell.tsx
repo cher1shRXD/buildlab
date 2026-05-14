@@ -1,5 +1,5 @@
-import { Zap } from "lucide-react";
 import type { ReactNode } from "react";
+import { Logo } from "@/shared/ui/Logo";
 
 interface Props {
   children: ReactNode;
@@ -14,10 +14,7 @@ const FEATURES = [
 const AuthShell = ({ children }: Props) => (
   <div className="grid min-h-screen lg:grid-cols-2">
     <div className="hidden lg:flex flex-col justify-between bg-primary p-10 text-primary-foreground">
-      <div className="flex items-center gap-2 font-bold text-xl">
-        <Zap size={20} />
-        <span>Buildlab</span>
-      </div>
+      <Logo className="text-primary-foreground h-5" />
       <div className="space-y-8">
         <div>
           <h1 className="text-4xl font-bold leading-tight">Build AI Agent Skills<br />visually.</h1>
@@ -36,10 +33,7 @@ const AuthShell = ({ children }: Props) => (
     </div>
     <div className="flex items-center justify-center p-8 bg-background">
       <div className="w-full max-w-sm space-y-7">
-        <div className="lg:hidden flex items-center gap-2 text-primary font-bold text-xl">
-          <Zap size={18} />
-          <span>Buildlab</span>
-        </div>
+        <Logo className="lg:hidden text-primary h-5" />
         {children}
       </div>
     </div>
