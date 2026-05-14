@@ -6,6 +6,7 @@ import Canvas from "@/features/canvas-editor/ui/Canvas";
 import EditorHeader from "@/features/editor-layout/ui/EditorHeader";
 import EditorSidebar from "@/features/editor-layout/ui/EditorSidebar";
 import NodeEditorPanel from "@/features/node-editor/ui/NodeEditorPanel";
+import MobileEditorView from "@/features/editor-layout/ui/MobileEditorView";
 import ExportModal from "@/features/skill-export/ui/ExportModal";
 import { useFlowStore } from "@/features/canvas-editor/stores/flow";
 import { useAutoSave } from "@/features/canvas-editor/hooks/useAutoSave";
@@ -53,10 +54,18 @@ const EditorShellInner = ({ skill, flow }: Props) => {
   };
 
   const isOpen = !!selectedNodeId;
+  const nodes = useFlowStore((s) => s.nodes);
 
   return (
     <>
-      <div className="flex flex-col h-dvh overflow-hidden bg-background">
+      {/* 모바일: 읽기 전용 */}
+      <div className="lg:hidden flex flex-col h-dvh overflow-hidden bg-background">
+        <EditorHeader skill={skill} onExport={() => setExportOpen(true)} isExporting={isExporting} />
+        <MobileEditorView nodes={nodes} />
+      </div>
+
+      {/* 데스크톱: 전체 에디터 */}
+      <div className="hidden lg:flex flex-col h-dvh overflow-hidden bg-background">
         <EditorHeader skill={skill} onExport={() => setExportOpen(true)} isExporting={isExporting} />
         <div className="flex flex-1 overflow-hidden">
           <EditorSidebar />
@@ -73,6 +82,7 @@ const EditorShellInner = ({ skill, flow }: Props) => {
           </div>
         </div>
       </div>
+
       <ExportModal
         open={exportOpen}
         onOpenChange={setExportOpen}
