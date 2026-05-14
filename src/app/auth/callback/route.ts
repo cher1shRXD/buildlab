@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     );
 
     console.log("[auth/callback] supabase url:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("[auth/callback] cookies:", cookieStore.getAll().map((c) => c.name).join(", "));
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
       console.error("[auth/callback] supabase error:", error.message);
