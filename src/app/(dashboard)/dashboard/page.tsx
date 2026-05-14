@@ -5,7 +5,7 @@ import SkillGrid from "@/features/skill-library/ui/SkillGrid";
 export default function DashboardPage() {
   return (
     <div className="p-4 md:p-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">내 스킬</h1>
           <p className="text-sm text-muted-foreground mt-1">
