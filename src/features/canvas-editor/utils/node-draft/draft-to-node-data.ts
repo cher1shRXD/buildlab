@@ -7,7 +7,7 @@ export function draftToNodeData(kind: NodeKind, draft: Record<string, unknown>):
 
   switch (kind) {
     case "input":
-      return { label, fields: [], hasError: undefined };
+      return { label, fields: draft.fields ?? [], hasError: undefined };
     case "trigger":
       return {
         label,

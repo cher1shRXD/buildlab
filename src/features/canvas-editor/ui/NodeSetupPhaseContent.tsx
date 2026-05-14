@@ -1,6 +1,7 @@
 "use client";
 
 import type { NodeKind } from "@/entities/flow/types";
+import InputPhase from "./phases/InputPhase";
 import TriggerPhase from "./phases/TriggerPhase";
 import LLMPhase from "./phases/LLMPhase";
 import ToolPhase from "./phases/ToolPhase";
@@ -18,6 +19,8 @@ interface Props {
 
 const NodeSetupPhaseContent = ({ kind, phase, draft, update }: Props) => {
   switch (kind) {
+    case "input":
+      return <InputPhase draft={draft} update={update} />;
     case "trigger":
       return <TriggerPhase phase={phase} draft={draft} update={update} />;
     case "llm":
