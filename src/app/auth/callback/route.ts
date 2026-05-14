@@ -30,11 +30,15 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) {
-    console.error("[auth/callback] exchangeCodeForSession failed:", error.message);
-    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
+  try {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) {
+      console.error("[auth/callback] supabase error:", error.message);
+      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
+    }
+    return response;
+  } catch (err) {
+    console.error("[auth/callback] threw:", err);
+    return NextResponse.redirect(`${origin}/login?error=unexpected`);
   }
-
-  return response;
 }
